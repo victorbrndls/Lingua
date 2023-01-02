@@ -1,4 +1,4 @@
-package com.victorb.lingua.ui.theme
+package com.victorb.lingua.ui.designsystem.theme
 
 import androidx.compose.ui.graphics.Color
 

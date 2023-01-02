@@ -1,4 +1,4 @@
-package com.victorb.lingua.ui.theme
+package com.victorb.lingua.ui.designsystem
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes
