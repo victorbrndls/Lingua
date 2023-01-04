@@ -1,26 +1,39 @@
 package com.victorb.lingua.ui.home
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.victorb.lingua.ui.deck.list.DeckCardListComponent
+import com.victorb.lingua.ui.route.Routes
+import com.victorb.lingua.ui.route.navigate
 
 @Composable
 fun HomeRoute(
     navController: NavController,
 ) {
-    HomeScreen()
+    HomeScreen(
+        onNavigateToListDeck = { navController.navigate(Routes.DeckLibrary) }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 private fun HomeScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onNavigateToListDeck: () -> Unit,
 ) {
-    Scaffold { innerPadding ->
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = onNavigateToListDeck) {
+                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Deck")
+            }
+        }
+    ) { innerPadding ->
         BoxWithConstraints(
             modifier = modifier
                 .padding(innerPadding)
