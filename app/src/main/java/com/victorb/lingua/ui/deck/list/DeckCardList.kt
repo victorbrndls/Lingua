@@ -7,8 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.victorb.lingua.ui.deck.card.DeckCard
-import com.victorb.lingua.ui.deck.card.DeckCardModel
 
 @Composable
 fun DeckCardListComponent(

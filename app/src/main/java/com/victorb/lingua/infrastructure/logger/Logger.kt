@@ -14,6 +14,10 @@ class Logger {
         fun e(message: String, throwable: Throwable) {
             Log.e(TAG, message, throwable)
         }
+
+        fun e(message: String) {
+            Log.e(TAG, message)
+        }
     }
 
 }

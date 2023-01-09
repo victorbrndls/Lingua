@@ -1,4 +1,4 @@
-package com.victorb.lingua.ui.deck.card
+package com.victorb.lingua.ui.deck.list
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
