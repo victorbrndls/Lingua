@@ -11,9 +11,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import com.victorb.lingua.ui.designsystem.component.LinguaAppBar
 import com.victorb.lingua.ui.route.Routes
@@ -25,10 +27,12 @@ fun EditDeckRoute(
     deckId: String?,
     viewModel: EditDeckViewModel = hiltViewModel()
 ) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
     LaunchedEffect(deckId ?: "none") {
         viewModel.loadDeck(deckId)
 
-        viewModel.action.collectLatest { action ->
+        viewModel.action.flowWithLifecycle(lifecycle).collectLatest { action ->
             when (action) {
                 is EditDeckAction.NavigateToAddCard ->
                     navController.navigate(Routes.AddCard.parseRoute(action.deckId))

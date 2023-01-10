@@ -2,13 +2,17 @@ package com.victorb.lingua.ui.deck.card
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.victorb.lingua.core.card.dto.SaveDeckCardData
+import com.victorb.lingua.core.card.usecase.SaveDeckCardUseCase
 import com.victorb.lingua.infrastructure.logger.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class EditCardViewModel @Inject constructor() : ViewModel() {
+class EditCardViewModel @Inject constructor(
+    private val saveCardUseCase: SaveDeckCardUseCase
+) : ViewModel() {
 
     val state: EditCardState = EditCardState()
 
@@ -25,7 +29,6 @@ class EditCardViewModel @Inject constructor() : ViewModel() {
             deckId != null -> createNewCard(deckId)
             cardId != null -> loadCard(cardId)
         }
-
     }
 
     private fun createNewCard(deckId: String) {
@@ -37,8 +40,32 @@ class EditCardViewModel @Inject constructor() : ViewModel() {
         // TODO load card
     }
 
-    fun saveCard() {
+    fun save() {
+        if (!validateState()) return
 
+        val data = SaveDeckCardData(
+            state.id.ifBlank { null },
+            state.deckId,
+            state.input,
+            state.outputs
+        )
+
+        viewModelScope.launch {
+            saveCardUseCase.save(data)
+            _action.emit()
+        }
+    }
+
+    private fun validateState(): Boolean {
+        if (state.input.isBlank()) return false
+        if (state.outputs.all { it.isBlank() }) return false
+
+        if (state.deckId.isBlank()) {
+            Logger.e("Deck is missing but that's an invalid state")
+            return false
+        }
+
+        return true
     }
 
 }

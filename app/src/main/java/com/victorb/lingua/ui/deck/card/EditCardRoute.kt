@@ -6,9 +6,14 @@ import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import com.victorb.lingua.ui.designsystem.component.LinguaAppBar
 import kotlinx.coroutines.flow.collectLatest
@@ -20,10 +25,12 @@ fun EditCardRoute(
     cardId: String? = null,
     viewModel: EditCardViewModel = hiltViewModel()
 ) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
     LaunchedEffect(deckId, cardId) {
         viewModel.load(deckId, cardId)
 
-        viewModel.action.collectLatest { action ->
+        viewModel.action.flowWithLifecycle(lifecycle).collectLatest { action ->
             when (action) {
                 EditCardAction.NavigateUp -> navController.navigateUp()
             }
@@ -33,7 +40,7 @@ fun EditCardRoute(
     EditCardScreen(
         state = viewModel.state,
         onNavigateUp = { navController.navigateUp() },
-        onSave = { },
+        onSave = { viewModel.save() },
     )
 }
 
@@ -53,7 +60,14 @@ private fun EditCardScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = onSave) {
+            val alpha = remember {
+                derivedStateOf { if (state.isSaveEnabled) 1f else 0f }
+            }
+
+            FloatingActionButton(
+                onClick = onSave,
+                modifier = Modifier.alpha(alpha.value)
+            ) {
                 Icon(imageVector = Icons.Default.Done, contentDescription = "Save Card")
             }
         },
