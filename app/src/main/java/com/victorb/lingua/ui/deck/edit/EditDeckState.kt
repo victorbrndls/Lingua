@@ -17,6 +17,7 @@ class EditDeckState {
 
 }
 
+@Stable
 data class EditDeckCardModel(
     val source: String,
     val translations: List<String>,

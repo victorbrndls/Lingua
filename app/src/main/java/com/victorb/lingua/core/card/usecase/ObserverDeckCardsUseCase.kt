@@ -5,15 +5,15 @@ import com.victorb.lingua.core.card.repository.DeckCardRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
-interface ObserverDeckCardUseCase {
+interface ObserverDeckCardsUseCase {
 
     fun observe(deckId: String): Flow<List<DeckCard>>
 
 }
 
-class ObserverDeckCardUseCaseImpl @Inject constructor(
+class ObserverDeckCardsUseCaseImpl @Inject constructor(
     private val repository: DeckCardRepository,
-) : ObserverDeckCardUseCase {
+) : ObserverDeckCardsUseCase {
 
     override fun observe(deckId: String): Flow<List<DeckCard>> {
         return repository.observeCards(deckId = deckId)

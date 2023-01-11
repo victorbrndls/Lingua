@@ -2,6 +2,7 @@ package com.victorb.lingua.ui.deck.edit
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.victorb.lingua.core.card.usecase.ObserverDeckCardsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -10,7 +11,9 @@ import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class EditDeckViewModel @Inject constructor() : ViewModel() {
+class EditDeckViewModel @Inject constructor(
+    private val observerDeckCardsUseCase: ObserverDeckCardsUseCase
+) : ViewModel() {
 
     val state: EditDeckState = EditDeckState()
 
@@ -33,6 +36,14 @@ class EditDeckViewModel @Inject constructor() : ViewModel() {
         } else {
             state.id = UUID.randomUUID().toString()
         }
+
+        viewModelScope.launch {
+            observerDeckCardsUseCase.observe(state.id).collect { cards ->
+                state.cards = cards.map { card ->
+                    EditDeckCardModel(card.input, card.outputs)
+                }
+            }
+        }
     }
 
     fun addNewCard() {
@@ -49,8 +60,8 @@ class EditDeckViewModel @Inject constructor() : ViewModel() {
 
 }
 
-sealed class EditDeckAction {
-    data class NavigateToAddCard(val deckId: String) : EditDeckAction()
-    data class NavigateToEditCard(val cardId: String) : EditDeckAction()
-    object NavigateUp : EditDeckAction()
+sealed interface EditDeckAction {
+    data class NavigateToAddCard(val deckId: String) : EditDeckAction
+    data class NavigateToEditCard(val cardId: String) : EditDeckAction
+    object NavigateUp : EditDeckAction
 }

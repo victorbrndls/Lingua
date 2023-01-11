@@ -1,7 +1,7 @@
 package com.victorb.lingua.di
 
-import com.victorb.lingua.core.card.usecase.ObserverDeckCardUseCase
-import com.victorb.lingua.core.card.usecase.ObserverDeckCardUseCaseImpl
+import com.victorb.lingua.core.card.usecase.ObserverDeckCardsUseCase
+import com.victorb.lingua.core.card.usecase.ObserverDeckCardsUseCaseImpl
 import com.victorb.lingua.core.card.usecase.SaveCardUseCaseImpl
 import com.victorb.lingua.core.card.usecase.SaveDeckCardUseCase
 import dagger.Binds
@@ -20,6 +20,6 @@ abstract class DeckCardModule {
 
     @Binds
     @Singleton
-    abstract fun observerDeckCardUseCase(impl: ObserverDeckCardUseCaseImpl): ObserverDeckCardUseCase
+    abstract fun observerDeckCardUseCase(impl: ObserverDeckCardsUseCaseImpl): ObserverDeckCardsUseCase
 
 }
