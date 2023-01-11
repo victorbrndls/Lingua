@@ -5,6 +5,8 @@ import androidx.compose.runtime.*
 @Stable
 class EditCardState {
 
+    var isLoading by mutableStateOf(false)
+
     var id by mutableStateOf("")
     var deckId by mutableStateOf("")
 

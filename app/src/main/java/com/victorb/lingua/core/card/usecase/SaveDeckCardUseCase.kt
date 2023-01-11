@@ -16,7 +16,7 @@ class SaveCardUseCaseImpl @Inject constructor(
 ) : SaveDeckCardUseCase {
 
     override suspend fun save(card: SaveDeckCardData): DeckCard {
-        return repository.save(card)
+        return repository.saveCard(card)
     }
 
 }

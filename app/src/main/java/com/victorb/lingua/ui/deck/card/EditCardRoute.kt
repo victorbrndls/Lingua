@@ -36,7 +36,7 @@ fun EditCardRoute(
 
         viewModel.action.flowWithLifecycle(lifecycle).collectLatest { action ->
             when (action) {
-                else -> {}
+                EditCardAction.NavigateBack -> navController.navigateUp()
             }
         }
     }

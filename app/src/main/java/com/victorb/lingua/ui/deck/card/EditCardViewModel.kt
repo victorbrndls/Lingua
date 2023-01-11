@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.victorb.lingua.core.card.dto.SaveDeckCardData
 import com.victorb.lingua.core.card.usecase.SaveDeckCardUseCase
+import com.victorb.lingua.infrastructure.ktx.onFinally
 import com.victorb.lingua.infrastructure.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -48,8 +49,12 @@ class EditCardViewModel @Inject constructor(
         )
 
         viewModelScope.launch {
-            saveCardUseCase.save(data)
-            //_action.emit()
+            runCatching {
+                state.isLoading = true
+                saveCardUseCase.save(data)
+            }
+                .onFinally { state.isLoading = false }
+                .onSuccess { _action.emit(EditCardAction.NavigateBack) }
         }
     }
 
@@ -67,6 +72,6 @@ class EditCardViewModel @Inject constructor(
 
 }
 
-sealed class EditCardAction {
-
+sealed interface EditCardAction {
+    object NavigateBack : EditCardAction
 }
