@@ -5,11 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.victorb.lingua.core.card.dto.SaveDeckCardData
 import com.victorb.lingua.core.card.usecase.SaveDeckCardUseCase
 import com.victorb.lingua.infrastructure.logger.Logger
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@HiltViewModel
 class EditCardViewModel @Inject constructor(
     private val saveCardUseCase: SaveDeckCardUseCase
 ) : ViewModel() {
@@ -52,7 +54,7 @@ class EditCardViewModel @Inject constructor(
 
         viewModelScope.launch {
             saveCardUseCase.save(data)
-            _action.emit()
+            //_action.emit()
         }
     }
 
