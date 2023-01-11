@@ -21,15 +21,10 @@ class EditCardViewModel @Inject constructor(
     private val _action = MutableSharedFlow<EditCardAction>()
     val action: Flow<EditCardAction> = _action
 
-    fun load(deckId: String?, cardId: String?) {
-        when {
-            deckId == null && cardId == null -> {
-                Logger.e("deckId and cardId are null")
-                viewModelScope.launch { _action.emit(EditCardAction.NavigateUp) }
-                return
-            }
-            deckId != null -> createNewCard(deckId)
-            cardId != null -> loadCard(cardId)
+    fun load(params: EditCardNavigationParams) {
+        when (params) {
+            is EditCardNavigationParams.AddCard -> createNewCard(params.deckId)
+            is EditCardNavigationParams.EditCard -> loadCard(params.cardId)
         }
     }
 
@@ -73,5 +68,5 @@ class EditCardViewModel @Inject constructor(
 }
 
 sealed class EditCardAction {
-    object NavigateUp : EditCardAction()
+
 }

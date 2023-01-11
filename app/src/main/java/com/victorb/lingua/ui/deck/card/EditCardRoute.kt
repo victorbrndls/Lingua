@@ -18,21 +18,25 @@ import androidx.navigation.NavController
 import com.victorb.lingua.ui.designsystem.component.LinguaAppBar
 import kotlinx.coroutines.flow.collectLatest
 
+sealed interface EditCardNavigationParams {
+    data class AddCard(val deckId: String) : EditCardNavigationParams
+    data class EditCard(val cardId: String) : EditCardNavigationParams
+}
+
 @Composable
 fun EditCardRoute(
     navController: NavController,
-    deckId: String? = null,
-    cardId: String? = null,
+    params: EditCardNavigationParams,
     viewModel: EditCardViewModel = hiltViewModel()
 ) {
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
-    LaunchedEffect(deckId, cardId) {
-        viewModel.load(deckId, cardId)
+    LaunchedEffect(params) {
+        viewModel.load(params)
 
         viewModel.action.flowWithLifecycle(lifecycle).collectLatest { action ->
             when (action) {
-                EditCardAction.NavigateUp -> navController.navigateUp()
+                else -> {}
             }
         }
     }

@@ -35,9 +35,9 @@ fun EditDeckRoute(
         viewModel.action.flowWithLifecycle(lifecycle).collectLatest { action ->
             when (action) {
                 is EditDeckAction.NavigateToAddCard ->
-                    navController.navigate(Routes.AddCard.parseRoute(action.deckId))
+                    navController.navigate(Routes.AddCard.createRoute(action.deckId))
                 is EditDeckAction.NavigateToEditCard ->
-                    navController.navigate(Routes.EditCard.parseRoute(action.cardId))
+                    navController.navigate(Routes.EditCard.createRoute(action.cardId))
                 EditDeckAction.NavigateUp ->
                     navController.navigateUp()
             }

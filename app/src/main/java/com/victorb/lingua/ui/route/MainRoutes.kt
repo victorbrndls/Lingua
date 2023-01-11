@@ -5,6 +5,7 @@ import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.victorb.lingua.ui.deck.card.EditCardNavigationParams
 import com.victorb.lingua.ui.deck.card.EditCardRoute
 import com.victorb.lingua.ui.deck.edit.EditDeckRoute
 import com.victorb.lingua.ui.deck.library.DeckLibraryRoute
@@ -25,13 +26,13 @@ fun MainRoutes() {
         }
 
         composable(Routes.AddCard) {
-            val deckId = Routes.AddCard.parse(it.arguments)
-            EditCardRoute(navController, deckId = deckId)
+            val deckId = requireNotNull(Routes.AddCard.parse(it.arguments)) { "deckId is missing" }
+            EditCardRoute(navController, params = EditCardNavigationParams.AddCard(deckId))
         }
 
         composable(Routes.EditCard) {
-            val cardId = Routes.EditCard.parse(it.arguments)
-            EditCardRoute(navController, cardId = cardId)
+            val cardId = requireNotNull(Routes.EditCard.parse(it.arguments)) { "cardId is missing" }
+            EditCardRoute(navController, params = EditCardNavigationParams.EditCard(cardId))
         }
     }
 }

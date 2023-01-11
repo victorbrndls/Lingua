@@ -30,7 +30,7 @@ fun DeckLibraryRoute(
     DeckLibraryScreen(
         cards = viewModel.cards,
         onNavigateUp = { navController.navigateUp() },
-        onNavigateToAddDeck = { navController.navigate(Routes.EditDeck.parseRoute(null)) },
+        onNavigateToAddDeck = { navController.navigate(Routes.EditDeck.createRoute(null)) },
     )
 }
 
