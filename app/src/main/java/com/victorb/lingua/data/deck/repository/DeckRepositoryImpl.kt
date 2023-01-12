@@ -25,7 +25,7 @@ class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardReposit
         }
 
     override suspend fun getCard(id: String): DeckCard? {
-        return cards.last().find { it.id == id }
+        return cards.last().find { it.id == id }?.also { Logger.d("Fetched card $id") }
     }
 
     override fun observeCards(deckId: String): Flow<List<DeckCard>> {
@@ -57,7 +57,7 @@ class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardReposit
     }
 
     override suspend fun getDeck(id: String): Deck? {
-        return decks.value.find { it.id == id }
+        return decks.value.find { it.id == id }?.also { Logger.d("Fetched deck $id") }
     }
 
     override suspend fun saveDeck(deck: SaveDeckData): Deck {

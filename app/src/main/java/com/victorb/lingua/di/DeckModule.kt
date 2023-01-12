@@ -2,6 +2,8 @@ package com.victorb.lingua.di
 
 import com.victorb.lingua.core.card.repository.DeckCardRepository
 import com.victorb.lingua.core.deck.repository.DeckRepository
+import com.victorb.lingua.core.deck.usecase.GetDeckUseCase
+import com.victorb.lingua.core.deck.usecase.GetDeckUseCaseImpl
 import com.victorb.lingua.core.deck.usecase.SaveDeckUseCase
 import com.victorb.lingua.core.deck.usecase.SaveDeckUseCaseImpl
 import com.victorb.lingua.data.deck.repository.DeckRepositoryImpl
@@ -26,5 +28,9 @@ abstract class DeckModule {
     @Binds
     @Singleton
     abstract fun saveDeckUseCase(impl: SaveDeckUseCaseImpl): SaveDeckUseCase
+
+    @Binds
+    @Singleton
+    abstract fun getDeckUseCase(impl: GetDeckUseCaseImpl): GetDeckUseCase
 
 }

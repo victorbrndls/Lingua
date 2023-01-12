@@ -64,7 +64,7 @@ private fun EditDeckScreen(
     Scaffold(
         topBar = {
             LinguaAppBar(
-                title = if (state.id.isNotBlank()) "Edit Deck" else "Add Deck",
+                title = if (state.isNewDeck) "Add Deck" else "Edit Deck",
                 onNavigateUp = onNavigateUp
             )
         },
@@ -105,10 +105,10 @@ private fun EditDeckScreen(
                 Spacer(modifier = Modifier.height(8.dp))
 
                 LazyColumn {
-                    items(state.cards) { model ->
+                    items(state.cards, key = { it.id }) { model ->
                         CardModel(
                             model = model,
-                            modifier = Modifier.padding(vertical = 4.dp)
+                            modifier = Modifier.padding(vertical = 6.dp)
                         )
                     }
                 }

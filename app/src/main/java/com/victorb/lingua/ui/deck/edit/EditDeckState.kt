@@ -8,7 +8,9 @@ import androidx.compose.runtime.setValue
 @Stable
 class EditDeckState {
 
+    var isLoading by mutableStateOf(false)
     var isNewDeck by mutableStateOf(true)
+
     var id by mutableStateOf("")
 
     var title by mutableStateOf("")
@@ -19,6 +21,7 @@ class EditDeckState {
 
 @Stable
 data class EditDeckCardModel(
+    val id: String,
     val source: String,
     val translations: List<String>,
 )
