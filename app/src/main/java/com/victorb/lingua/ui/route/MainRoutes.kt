@@ -15,7 +15,7 @@ import com.victorb.lingua.ui.home.HomeRoute
 fun MainRoutes() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Routes.EditDeck.route) {
+    NavHost(navController = navController, startDestination = Routes.Home.route) {
         composable(Routes.Home) { HomeRoute(navController) }
 
         composable(Routes.DeckLibrary) { DeckLibraryRoute(navController) }

@@ -3,6 +3,9 @@ package com.victorb.lingua.ui.deck.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.victorb.lingua.core.card.usecase.ObserverDeckCardsUseCase
+import com.victorb.lingua.core.deck.dto.SaveDeckCardData
+import com.victorb.lingua.core.deck.dto.SaveDeckData
+import com.victorb.lingua.core.deck.usecase.SaveDeckUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -12,7 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditDeckViewModel @Inject constructor(
-    private val observerDeckCardsUseCase: ObserverDeckCardsUseCase
+    private val observerDeckCardsUseCase: ObserverDeckCardsUseCase,
+    private val saveDeckUseCase: SaveDeckUseCase,
 ) : ViewModel() {
 
     val state: EditDeckState = EditDeckState()
@@ -53,7 +57,14 @@ class EditDeckViewModel @Inject constructor(
     }
 
     fun save() {
+        val data = SaveDeckData(
+            deckId = state.id,
+            state.title,
+            state.cards.map { SaveDeckCardData("", 0) }
+        )
+
         viewModelScope.launch {
+            saveDeckUseCase.save(data)
             _action.emit(EditDeckAction.NavigateUp)
         }
     }

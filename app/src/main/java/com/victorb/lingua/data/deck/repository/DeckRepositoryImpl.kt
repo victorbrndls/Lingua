@@ -3,6 +3,7 @@ package com.victorb.lingua.data.deck.repository
 import com.victorb.lingua.core.card.dto.SaveDeckCardData
 import com.victorb.lingua.core.card.entity.DeckCard
 import com.victorb.lingua.core.card.repository.DeckCardRepository
+import com.victorb.lingua.core.deck.dto.SaveDeckData
 import com.victorb.lingua.core.deck.entity.Deck
 import com.victorb.lingua.core.deck.repository.DeckRepository
 import com.victorb.lingua.infrastructure.ktx.replaceOrAdd
@@ -35,10 +36,10 @@ class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardReposit
 
     override suspend fun saveCard(card: SaveDeckCardData): DeckCard {
         val entity = DeckCard(
-            card.cardId ?: UUID.randomUUID().toString(),
-            card.deckId,
-            card.input,
-            card.outputs,
+            id = card.cardId ?: UUID.randomUUID().toString(),
+            deckId = card.deckId,
+            input = card.input,
+            outputs = card.outputs,
         )
 
         decks.value.find { it.id == entity.deckId }?.let { deck ->
@@ -57,6 +58,40 @@ class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardReposit
 
     override suspend fun getDeck(id: String): Deck? {
         return decks.value.find { it.id == id }
+    }
+
+    override suspend fun saveDeck(deck: SaveDeckData): Deck {
+        decks.value.find { it.id == deck.deckId }?.let { existingDeck ->
+
+            val orderedCards = existingDeck.cards.sortedBy { card ->
+                deck.cards.find { card.id == it.cardId }?.position
+            }
+
+            val updatedDeck = existingDeck.copy(
+                title = existingDeck.title,
+                cards = orderedCards
+            )
+
+            decks.value = decks.value.replaceOrAdd({ it.id == existingDeck.id }, updatedDeck)
+            Logger.d("Updated deck | $updatedDeck")
+
+            return updatedDeck
+        } ?: run {
+            val cards = unownedCards.value.filter { it.deckId == deck.deckId }
+
+            val entity = Deck(
+                id = deck.deckId,
+                title = deck.title,
+                cards = cards
+            )
+
+            decks.value = decks.value + entity
+            unownedCards.value = unownedCards.value - cards.toSet()
+            Logger.d("Saved new deck | $entity")
+            Logger.d("Removed ${cards.size} cards from unowned cards")
+
+            return entity
+        }
     }
 
 }
