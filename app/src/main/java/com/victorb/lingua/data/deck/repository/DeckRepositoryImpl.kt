@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardRepository {
 
-    private val decks = MutableStateFlow(emptyList<Deck>())
+    private val decks = MutableStateFlow(fakeDecks)
     private val unownedCards = MutableStateFlow(emptyList<DeckCard>())
 
     private val cards: Flow<List<DeckCard>>
@@ -60,6 +60,10 @@ class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardReposit
         return decks.value.find { it.id == id }?.also { Logger.d("Fetched deck $id") }
     }
 
+    override suspend fun getDecks(): List<Deck> {
+        return decks.value.also { Logger.d("Fetched ${it.size} decks") }
+    }
+
     override suspend fun saveDeck(deck: SaveDeckData): Deck {
         decks.value.find { it.id == deck.deckId }?.let { existingDeck ->
 
@@ -95,3 +99,54 @@ class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardReposit
     }
 
 }
+
+private val fakeDecks = listOf(
+    Deck(
+        id = "deck1",
+        title = "10 Italian Words",
+        cards = listOf(
+            DeckCard(
+                id = UUID.randomUUID().toString(),
+                deckId = "deck1",
+                input = "Lorem ipsum dolor sit amet",
+                outputs = listOf("Consectetur adipiscing elit"),
+            ),
+            DeckCard(
+                id = UUID.randomUUID().toString(),
+                deckId = "deck1",
+                input = "Lorem ipsum?",
+                outputs = listOf("Adipiscing elit?"),
+            ),
+            DeckCard(
+                id = UUID.randomUUID().toString(),
+                deckId = "deck1",
+                input = "Excepteur",
+                outputs = listOf("Duis"),
+            ),
+        )
+    ),
+    Deck(
+        id = "deck2",
+        title = "Beginner Words for Portuguese Learners",
+        cards = listOf(
+            DeckCard(
+                id = UUID.randomUUID().toString(),
+                deckId = "deck2",
+                input = "Oi",
+                outputs = listOf("Hello"),
+            ),
+            DeckCard(
+                id = UUID.randomUUID().toString(),
+                deckId = "deck2",
+                input = "Bom dia",
+                outputs = listOf("Good morning"),
+            ),
+            DeckCard(
+                id = UUID.randomUUID().toString(),
+                deckId = "deck2",
+                input = "Tchau",
+                outputs = listOf("Bye"),
+            ),
+        )
+    ),
+)

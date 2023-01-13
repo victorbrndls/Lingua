@@ -1,4 +1,4 @@
-package com.victorb.lingua.ui.deck.list
+package com.victorb.lingua.ui.mydeck.list
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,9 +9,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 
 @Composable
-fun DeckCardListComponent(
+fun MyDeckListComponent(
     modifier: Modifier = Modifier,
-    viewModel: DeckCardListViewModel = hiltViewModel(),
+    viewModel: MyDeckListViewModel = hiltViewModel(),
 ) {
     DeckCardList(
         cards = viewModel.cards,
@@ -21,14 +21,14 @@ fun DeckCardListComponent(
 
 @Composable
 fun DeckCardList(
-    cards: List<DeckCardModel>,
+    cards: List<MyDeckModel>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier
     ) {
         items(cards) {
-            DeckCard(
+            MyDeckComponent(
                 model = it,
                 modifier = Modifier.padding(vertical = 6.dp)
             )

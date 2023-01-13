@@ -1,4 +1,4 @@
-package com.victorb.lingua.ui.deck.library.card
+package com.victorb.lingua.ui.deck.library.component
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -9,8 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LibraryDeckCard(
-    model: LibraryDeckCardModel,
+fun LibraryDeckComponent(
+    model: LibraryDeckModel,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -24,6 +24,7 @@ fun LibraryDeckCard(
     }
 }
 
-data class LibraryDeckCardModel(
+data class LibraryDeckModel(
+    val id: String,
     val title: String,
 )

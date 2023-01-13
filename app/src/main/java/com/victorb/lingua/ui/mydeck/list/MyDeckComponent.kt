@@ -1,4 +1,4 @@
-package com.victorb.lingua.ui.deck.list
+package com.victorb.lingua.ui.mydeck.list
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -13,8 +13,8 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 
 @Composable
-fun DeckCard(
-    model: DeckCardModel,
+fun MyDeckComponent(
+    model: MyDeckModel,
     modifier: Modifier = Modifier
 ) {
     Card(
@@ -62,7 +62,7 @@ fun DeckCard(
     }
 }
 
-data class DeckCardModel(
+data class MyDeckModel(
     val title: String,
     val progress: String,
     val imageUrl: String,

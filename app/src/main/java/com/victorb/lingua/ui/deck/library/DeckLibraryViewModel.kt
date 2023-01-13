@@ -1,35 +1,36 @@
 package com.victorb.lingua.ui.deck.library
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.victorb.lingua.ui.deck.library.card.LibraryDeckCardModel
+import androidx.lifecycle.viewModelScope
+import com.victorb.lingua.core.deck.entity.Deck
+import com.victorb.lingua.core.deck.usecase.GetDecksUseCase
+import com.victorb.lingua.infrastructure.ktx.onFinally
+import com.victorb.lingua.ui.deck.library.component.LibraryDeckModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.random.Random
 
 @HiltViewModel
-class DeckLibraryViewModel @Inject constructor() : ViewModel() {
+class DeckLibraryViewModel @Inject constructor(
+    private val getDecksUseCase: GetDecksUseCase
+) : ViewModel() {
 
-    var cards: List<LibraryDeckCardModel> by mutableStateOf(emptyList())
-        private set
+    var state = DeckLibraryState()
 
-    init {
-        loadCards()
+    fun loadCards() {
+        viewModelScope.launch { // todo: how to handle when deck changes? (observable or fetch again?)
+            runCatching {
+                state.isLoading = true
+                state.decks = getDecksUseCase.get().toModel()
+            }
+                .onFinally { state.isLoading = false }
+        }
     }
 
-    private fun loadCards() {
-        cards = listOf(
-            LibraryDeckCardModel(
-                title = "100 Most Popular Italian Words",
-            ),
-            LibraryDeckCardModel(
-                title = "10 Most Popular Portuguese Verbs",
-            ),
-            LibraryDeckCardModel(
-                title = "Useful words when visiting Germany",
-            ),
+    private fun List<Deck>.toModel() = map { deck ->
+        LibraryDeckModel(
+            id = deck.id,
+            title = deck.title,
         )
     }
 

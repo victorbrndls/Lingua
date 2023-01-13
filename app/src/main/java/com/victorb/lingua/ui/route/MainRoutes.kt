@@ -22,7 +22,7 @@ fun MainRoutes() {
 
         composable(Routes.EditDeck) {
             val deckId = Routes.EditDeck.parse(it.arguments)
-            EditDeckRoute(navController = navController, deckId = deckId ?: "1234")
+            EditDeckRoute(navController = navController, deckId = deckId)
         }
 
         composable(Routes.AddCard) {
