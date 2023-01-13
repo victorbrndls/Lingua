@@ -3,7 +3,9 @@ package com.victorb.lingua.ui.deck.edit
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.*
@@ -82,7 +84,8 @@ private fun EditDeckScreen(
                 .consumedWindowInsets(innerPadding)
         ) {
             Column(
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
 

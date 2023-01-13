@@ -10,7 +10,7 @@ class EditCardState {
     var id by mutableStateOf("")
     var deckId by mutableStateOf("")
 
-    var input by mutableStateOf("hello")
+    var input by mutableStateOf("")
 
     var outputs by mutableStateOf(emptyList<String>())
 
