@@ -72,7 +72,7 @@ class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardReposit
             }
 
             val updatedDeck = existingDeck.copy(
-                title = existingDeck.title,
+                title = deck.title,
                 cards = orderedCards
             )
 

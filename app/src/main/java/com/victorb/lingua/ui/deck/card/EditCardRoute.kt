@@ -1,6 +1,8 @@
 package com.victorb.lingua.ui.deck.card
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.*
@@ -10,7 +12,10 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.flowWithLifecycle
@@ -81,6 +86,8 @@ private fun EditCardScreen(
                 .padding(innerPadding)
                 .consumedWindowInsets(innerPadding)
         ) {
+            val outputsFocus = remember { FocusRequester() }
+
             Column(
                 modifier = Modifier.padding(horizontal = 8.dp)
             ) {
@@ -90,6 +97,8 @@ private fun EditCardScreen(
                     value = state.input,
                     label = { Text("Input") },
                     onValueChange = { state.input = it },
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { outputsFocus.requestFocus() }),
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -103,7 +112,10 @@ private fun EditCardScreen(
                     value = state.outputs.getOrNull(0) ?: "",
                     label = { Text("Output") },
                     onValueChange = { state.outputs = listOf(it) },
-                    modifier = Modifier.fillMaxWidth()
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(outputsFocus)
                 )
             }
         }
