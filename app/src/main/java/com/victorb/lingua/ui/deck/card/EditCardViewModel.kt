@@ -3,6 +3,8 @@ package com.victorb.lingua.ui.deck.card
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.victorb.lingua.core.card.dto.SaveDeckCardData
+import com.victorb.lingua.core.card.entity.DeckCard
+import com.victorb.lingua.core.card.usecase.GetDeckCardUseCase
 import com.victorb.lingua.core.card.usecase.SaveDeckCardUseCase
 import com.victorb.lingua.infrastructure.ktx.onFinally
 import com.victorb.lingua.infrastructure.logger.Logger
@@ -14,7 +16,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class EditCardViewModel @Inject constructor(
-    private val saveCardUseCase: SaveDeckCardUseCase
+    private val saveCardUseCase: SaveDeckCardUseCase,
+    private val getDeckCardUseCase: GetDeckCardUseCase,
 ) : ViewModel() {
 
     val state: EditCardState = EditCardState()
@@ -35,6 +38,15 @@ class EditCardViewModel @Inject constructor(
 
     private fun loadCard(cardId: String) {
         state.id = cardId
+
+        viewModelScope.launch {
+            runCatching {
+                state.isLoading = true
+                val card = getDeckCardUseCase.get(cardId) ?: return@launch
+                state.applyEntity(card)
+            }
+                .onFinally { state.isLoading = false }
+        }
         // TODO load card
     }
 
@@ -68,6 +80,13 @@ class EditCardViewModel @Inject constructor(
         }
 
         return true
+    }
+
+    private fun EditCardState.applyEntity(card: DeckCard) {
+        id = card.id
+        deckId = card.deckId
+        input = card.input
+        outputs = card.outputs
     }
 
 }

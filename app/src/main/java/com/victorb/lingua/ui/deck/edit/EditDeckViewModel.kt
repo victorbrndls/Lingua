@@ -11,7 +11,6 @@ import com.victorb.lingua.core.deck.usecase.SaveDeckUseCase
 import com.victorb.lingua.infrastructure.ktx.onFinally
 import com.victorb.lingua.infrastructure.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -58,6 +57,12 @@ class EditDeckViewModel @Inject constructor(
     fun addNewCard() {
         viewModelScope.launch {
             _action.emit(EditDeckAction.NavigateToAddCard(state.id))
+        }
+    }
+
+    fun onCardClicked(model: EditDeckCardModel) {
+        viewModelScope.launch {
+            _action.emit(EditDeckAction.NavigateToEditCard(model.id))
         }
     }
 

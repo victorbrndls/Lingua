@@ -6,73 +6,73 @@ import java.util.*
 
 private val fakeCards = listOf(
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "Car",
         outputs = listOf("Auto"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "Tomato",
         outputs = listOf("Tomate"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "Sugar",
         outputs = listOf("Zucker"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "Oi",
         outputs = listOf("Hello"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "Bom dia",
         outputs = listOf("Good morning"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "Tchau",
         outputs = listOf("Bye"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "And",
         outputs = listOf("E"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "Finger",
         outputs = listOf("Dedo"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "Lorem",
         outputs = listOf("Ipsum"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "Keyboard and Mouse",
         outputs = listOf("Teclado e Mouse"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "How are you?",
         outputs = listOf("Wie geht's?"),
     ),
     DeckCard(
-        id = UUID.randomUUID().toString(),
+        id = "",
         deckId = "",
         input = "I'm doing good",
         outputs = listOf("Mir geht es gut"),
@@ -83,21 +83,25 @@ val fakeDecks = listOf(
     Deck(
         id = "deck1",
         title = "10 Italian Words",
-        cards = fakeCards.shuffled().take(14).map { it.copy(deckId = "deck1") },
+        cards = fakeCards.shuffled().take(14)
+            .map { it.copy(id = UUID.randomUUID().toString(), deckId = "deck1") },
     ),
     Deck(
         id = "deck2",
         title = "Beginner Words for Portuguese Learners",
-        cards = fakeCards.shuffled().take(14).map { it.copy(deckId = "deck2") },
+        cards = fakeCards.shuffled().take(14)
+            .map { it.copy(id = UUID.randomUUID().toString(), deckId = "deck2") },
     ),
     Deck(
         id = "deck3",
         title = "German for Kids",
-        cards = fakeCards.shuffled().take(14).map { it.copy(deckId = "deck3") },
+        cards = fakeCards.shuffled().take(14)
+            .map { it.copy(id = UUID.randomUUID().toString(), deckId = "deck3") },
     ),
     Deck(
         id = "deck4",
         title = "18th English Words",
-        cards = fakeCards.shuffled().take(14).map { it.copy(deckId = "deck4") },
+        cards = fakeCards.shuffled().take(14)
+            .map { it.copy(id = UUID.randomUUID().toString(), deckId = "deck4") },
     ),
 )

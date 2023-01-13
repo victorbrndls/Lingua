@@ -1,11 +1,10 @@
 package com.victorb.lingua.ui.deck.edit
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.*
@@ -50,6 +49,7 @@ fun EditDeckRoute(
 
     EditDeckScreen(
         state = viewModel.state,
+        onCardClick = viewModel::onCardClicked,
         onNavigateUp = navController::navigateUp,
         onAddNewCard = viewModel::addNewCard,
         onSave = viewModel::save,
@@ -61,6 +61,7 @@ fun EditDeckRoute(
 private fun EditDeckScreen(
     modifier: Modifier = Modifier,
     state: EditDeckState,
+    onCardClick: (EditDeckCardModel) -> Unit,
     onNavigateUp: () -> Unit,
     onAddNewCard: () -> Unit,
     onSave: () -> Unit,
@@ -83,49 +84,59 @@ private fun EditDeckScreen(
                 .padding(innerPadding)
                 .consumedWindowInsets(innerPadding)
         ) {
-            Column(
+
+            LazyColumn(
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
             ) {
-                Spacer(modifier = Modifier.height(8.dp))
+                item {
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                TextField(
-                    value = state.title,
-                    label = { Text("Title") },
-                    onValueChange = { state.title = it },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    TextField(
+                        value = state.title,
+                        label = { Text("Title") },
+                        onValueChange = { state.title = it },
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Text(
-                    text = "Drag cards to reorder them",
-                    modifier = Modifier.alpha(0.7f)
-                )
-                Text(
-                    text = "Tap cards to edit them",
-                    modifier = Modifier.alpha(0.7f)
-                )
+                    Text(
+                        text = "Drag cards to reorder them",
+                        modifier = Modifier.alpha(0.7f)
+                    )
+                    Text(
+                        text = "Tap cards to edit them",
+                        modifier = Modifier.alpha(0.7f)
+                    )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                LazyColumn {
-                    items(state.cards, key = { it.id }) { model ->
-                        CardModel(
-                            model = model,
-                            modifier = Modifier.padding(vertical = 6.dp)
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                Spacer(modifier = Modifier.height(8.dp))
+                items(state.cards, key = { it.id }) { model ->
+                    CardModel(
+                        model = model,
+                        onClick = { onCardClick(model) },
+                        modifier = Modifier.padding(vertical = 6.dp)
+                    )
+                }
 
-                Button(
-                    onClick = onAddNewCard,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                ) {
-                    Text(text = "New Card")
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Button(
+                            onClick = onAddNewCard,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        ) {
+                            Text(text = "New Card")
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
                 }
             }
         }
@@ -135,9 +146,13 @@ private fun EditDeckScreen(
 @Composable
 private fun CardModel(
     model: EditDeckCardModel,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier
+            .clickable(onClick = onClick)
+    ) {
         Text(
             text = model.source,
             fontSize = 18.sp,
