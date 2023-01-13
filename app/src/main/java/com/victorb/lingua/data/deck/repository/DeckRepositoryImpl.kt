@@ -8,7 +8,10 @@ import com.victorb.lingua.core.deck.entity.Deck
 import com.victorb.lingua.core.deck.repository.DeckRepository
 import com.victorb.lingua.infrastructure.ktx.replaceOrAdd
 import com.victorb.lingua.infrastructure.logger.Logger
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -25,7 +28,9 @@ class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardReposit
         }
 
     override suspend fun getCard(id: String): DeckCard? {
-        return cards.last().find { it.id == id }?.also { Logger.d("Fetched card $id") }
+        return (decks.value.flatMap { it.cards } + unownedCards.value)
+            .find { it.id == id }
+            ?.also { Logger.d("Fetched card $id") }
     }
 
     override fun observeCards(deckId: String): Flow<List<DeckCard>> {

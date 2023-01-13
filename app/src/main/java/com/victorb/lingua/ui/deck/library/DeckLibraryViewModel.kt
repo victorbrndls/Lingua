@@ -32,7 +32,7 @@ class DeckLibraryViewModel @Inject constructor(
         }
     }
 
-    fun viewDeck(deckModel: LibraryDeckModel) {
+    fun onDeckClicked(deckModel: LibraryDeckModel) {
         viewModelScope.launch { _action.emit(DeckLibraryAction.NavigateToEditDeck(deckModel.id)) }
     }
 

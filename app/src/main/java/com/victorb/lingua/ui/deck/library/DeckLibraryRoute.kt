@@ -46,7 +46,7 @@ fun DeckLibraryRoute(
 
     DeckLibraryScreen(
         state = viewModel.state,
-        onDeckClicked = viewModel::viewDeck,
+        onDeckClicked = viewModel::onDeckClicked,
         onNavigateUp = { navController.navigateUp() },
         onNavigateToAddDeck = { navController.navigate(Routes.EditDeck.createRoute(null)) },
     )
