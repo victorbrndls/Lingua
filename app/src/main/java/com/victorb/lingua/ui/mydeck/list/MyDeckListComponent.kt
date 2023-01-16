@@ -14,22 +14,25 @@ fun MyDeckListComponent(
     viewModel: MyDeckListViewModel = hiltViewModel(),
 ) {
     DeckCardList(
-        cards = viewModel.cards,
+        state = viewModel.state,
+        onDeckClick = viewModel::onDeckClicked,
         modifier = modifier
     )
 }
 
 @Composable
 fun DeckCardList(
-    cards: List<MyDeckModel>,
+    state: MyDeckState,
+    onDeckClick: (MyDeckModel) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier
     ) {
-        items(cards) {
+        items(state.decks) { model ->
             MyDeckComponent(
-                model = it,
+                model = model,
+                onClick = { onDeckClick(model) },
                 modifier = Modifier.padding(vertical = 6.dp)
             )
         }

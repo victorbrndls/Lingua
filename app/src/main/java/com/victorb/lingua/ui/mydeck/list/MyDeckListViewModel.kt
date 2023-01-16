@@ -1,42 +1,46 @@
 package com.victorb.lingua.ui.mydeck.list
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.victorb.lingua.core.mydeck.entity.MyDeck
+import com.victorb.lingua.core.mydeck.usecase.MyDecksUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MyDeckListViewModel @Inject constructor(
-
+    private val myDecksUseCase: MyDecksUseCase
 ) : ViewModel() {
 
-    var cards: List<MyDeckModel> by mutableStateOf(emptyList())
-        private set
+    val state = MyDeckState()
 
     init {
         loadCards()
     }
 
     private fun loadCards() {
-        cards = listOf(
-            MyDeckModel(
-                title = "100 Most Popular Italian Words",
-                progress = "0/100",
-                imageUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/0/03/Flag_of_Italy.svg/320px-Flag_of_Italy.svg.png",
-            ),
-            MyDeckModel(
-                title = "10 Most Popular Portuguese Verbs",
-                progress = "4/10",
-                imageUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/0/05/Flag_of_Brazil.svg/320px-Flag_of_Brazil.svg.png",
-            ),
-            MyDeckModel(
-                title = "Useful words when visiting Germany",
-                progress = "7/34",
-                imageUrl = "https://upload.wikimedia.org/wikipedia/en/thumb/b/ba/Flag_of_Germany.svg/320px-Flag_of_Germany.svg.png",
-            ),
-        )
+        viewModelScope.launch {
+            state.isLoading = true
+
+            myDecksUseCase.observeMyDecks().collectLatest { decks ->
+                state.isLoading = false
+                state.applyEntity(decks)
+            }
+        }
+    }
+
+    fun onDeckClicked(model: MyDeckModel) {
+
+    }
+
+    private fun MyDeckState.applyEntity(decks: List<MyDeck>) {
+        this.decks = decks.toModel()
+    }
+
+    private fun List<MyDeck>.toModel() = map { deck ->
+        MyDeckModel(deck.id, deck.title, "")
     }
 
 }
