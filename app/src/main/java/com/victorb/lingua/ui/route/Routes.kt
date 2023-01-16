@@ -22,5 +22,8 @@ sealed class Routes(val route: String) {
         fun parse(bundle: Bundle?): String? = bundle?.getString("id")?.takeIf { it != "null" }
     }
 
-    object Practice : Routes("/practice")
+    object Practice : Routes("/practice/deck/{id}") {
+        fun createRoute(deckId: String?) = "/practice/deck/$deckId"
+        fun parse(bundle: Bundle?): String? = bundle?.getString("id")?.takeIf { it != "null" }
+    }
 }

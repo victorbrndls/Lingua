@@ -10,6 +10,7 @@ import com.victorb.lingua.ui.deck.card.EditCardRoute
 import com.victorb.lingua.ui.deck.edit.EditDeckRoute
 import com.victorb.lingua.ui.deck.library.DeckLibraryRoute
 import com.victorb.lingua.ui.home.HomeRoute
+import com.victorb.lingua.ui.practice.PracticeRoute
 
 @Composable
 fun MainRoutes() {
@@ -17,6 +18,11 @@ fun MainRoutes() {
 
     NavHost(navController = navController, startDestination = Routes.Home.route) {
         composable(Routes.Home) { HomeRoute(navController) }
+
+        composable(Routes.Practice) {
+            val deckId = requireNotNull(Routes.Practice.parse(it.arguments)) { "deckId is missing" }
+            PracticeRoute(navController, deckId)
+        }
 
         composable(Routes.DeckLibrary) { DeckLibraryRoute(navController) }
 
