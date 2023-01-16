@@ -5,6 +5,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface MyDeckRepository {
 
-    suspend fun observeMyDecks(): Flow<List<MyDeck>>
+    fun observeMyDecks(): Flow<List<MyDeck>>
 
 }

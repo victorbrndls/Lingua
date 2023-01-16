@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 interface MyDecksUseCase {
 
-    suspend fun observeMyDecks(): Flow<List<MyDeck>>
+    fun observeMyDecks(): Flow<List<MyDeck>>
 
 }
 
@@ -15,7 +15,7 @@ class MyDecksUseCaseImpl @Inject constructor(
     private val myDeckRepository: MyDeckRepository
 ) : MyDecksUseCase {
 
-    override suspend fun observeMyDecks(): Flow<List<MyDeck>> {
+    override fun observeMyDecks(): Flow<List<MyDeck>> {
         return myDeckRepository.observeMyDecks()
     }
 

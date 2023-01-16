@@ -1,6 +1,5 @@
 package com.victorb.lingua.di
 
-import com.victorb.lingua.core.card.repository.DeckCardRepository
 import com.victorb.lingua.core.deck.repository.DeckRepository
 import com.victorb.lingua.core.deck.usecase.*
 import com.victorb.lingua.data.deck.repository.DeckRepositoryImpl
@@ -13,10 +12,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class DeckModule {
-
-    @Binds
-    @Singleton
-    abstract fun deckCardRepository(impl: DeckRepositoryImpl): DeckCardRepository
 
     @Binds
     @Singleton

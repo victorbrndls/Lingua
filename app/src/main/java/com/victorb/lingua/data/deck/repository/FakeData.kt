@@ -74,8 +74,20 @@ private val fakeCards = listOf(
     DeckCard(
         id = "",
         deckId = "",
-        input = "I'm doing good",
+        input = "I'm doing well",
         outputs = listOf("Mir geht es gut"),
+    ),
+    DeckCard(
+        id = "",
+        deckId = "",
+        input = "Sausage",
+        outputs = listOf("Wurst"),
+    ),
+    DeckCard(
+        id = "",
+        deckId = "",
+        input = "Juice",
+        outputs = listOf("Suco"),
     ),
 )
 

@@ -21,25 +21,20 @@ fun MyDeckComponent(
         modifier = modifier
             .fillMaxWidth()
     ) {
-        Column {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text(
                 text = model.progress,
                 modifier = Modifier
-                    .padding(end = 8.dp)
+                    .padding(top = 2.dp, end = 8.dp)
                     .align(Alignment.End)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = model.title,
-                    modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
-                )
-            }
+            Text(
+                text = model.title,
+                modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
+            )
         }
     }
 }

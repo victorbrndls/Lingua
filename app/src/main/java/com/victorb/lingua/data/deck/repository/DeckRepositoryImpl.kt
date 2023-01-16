@@ -6,6 +6,8 @@ import com.victorb.lingua.core.card.repository.DeckCardRepository
 import com.victorb.lingua.core.deck.dto.SaveDeckData
 import com.victorb.lingua.core.deck.entity.Deck
 import com.victorb.lingua.core.deck.repository.DeckRepository
+import com.victorb.lingua.core.mydeck.entity.MyDeck
+import com.victorb.lingua.core.mydeck.repository.MyDeckRepository
 import com.victorb.lingua.infrastructure.ktx.replaceOrAdd
 import com.victorb.lingua.infrastructure.logger.Logger
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +19,8 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardRepository {
+class DeckRepositoryImpl @Inject constructor() :
+    DeckRepository, DeckCardRepository, MyDeckRepository {
 
     private val decks = MutableStateFlow(fakeDecks)
     private val unownedCards = MutableStateFlow(emptyList<DeckCard>())
@@ -101,6 +104,20 @@ class DeckRepositoryImpl @Inject constructor() : DeckRepository, DeckCardReposit
 
             return entity
         }
+    }
+
+    override fun observeMyDecks(): Flow<List<MyDeck>> {
+        return decks
+            .map { decks ->
+                decks.map { deck ->
+                    MyDeck(
+                        id = deck.id,
+                        title = deck.title,
+                        learnedCards = 0,
+                        totalCards = deck.cards.size,
+                    )
+                }
+            }
     }
 
 }
