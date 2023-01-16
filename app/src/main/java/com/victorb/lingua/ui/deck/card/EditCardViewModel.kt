@@ -47,7 +47,6 @@ class EditCardViewModel @Inject constructor(
             }
                 .onFinally { state.isLoading = false }
         }
-        // TODO load card
     }
 
     fun save() {

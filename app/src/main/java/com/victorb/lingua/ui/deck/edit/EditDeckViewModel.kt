@@ -6,6 +6,7 @@ import com.victorb.lingua.core.card.entity.DeckCard
 import com.victorb.lingua.core.card.usecase.ObserverDeckCardsUseCase
 import com.victorb.lingua.core.deck.dto.SaveDeckCardData
 import com.victorb.lingua.core.deck.dto.SaveDeckData
+import com.victorb.lingua.core.deck.entity.Deck
 import com.victorb.lingua.core.deck.usecase.GetDeckUseCase
 import com.victorb.lingua.core.deck.usecase.SaveDeckUseCase
 import com.victorb.lingua.infrastructure.ktx.onFinally
@@ -30,18 +31,23 @@ class EditDeckViewModel @Inject constructor(
     val action: Flow<EditDeckAction> = _action
 
     fun loadDeck(deckId: String?) {
+        state.isNewDeck = deckId == null
+
         if (deckId != null) {
             state.id = deckId
-            state.isNewDeck = false
 
             viewModelScope.launch {
-                val deck = getDeckUseCase.get(deckId) ?: run {
-                    Logger.e("Tried to load a deck that doesn't exist | id: $deckId")
-                    return@launch
+                runCatching {
+                    state.isLoading = true
+                    getDeckUseCase.get(deckId)
                 }
-
-                state.title = deck.title
-                state.cards = deck.cards.toModel()
+                    .onFinally { state.isLoading = false }
+                    .onSuccess { deck ->
+                        state.applyEntity(deck ?: run {
+                            Logger.e("Tried to load a deck that doesn't exist | id: $deckId")
+                            return@onSuccess
+                        })
+                    }
             }
         } else {
             state.id = UUID.randomUUID().toString()
@@ -87,6 +93,11 @@ class EditDeckViewModel @Inject constructor(
     private fun validateState(): Boolean {
         if (state.title.isBlank()) return false
         return true
+    }
+
+    private fun EditDeckState.applyEntity(deck: Deck) {
+        title = deck.title
+        cards = deck.cards.toModel()
     }
 
     private fun List<DeckCard>.toModel() = map { card ->

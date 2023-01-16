@@ -84,7 +84,6 @@ private fun EditDeckScreen(
                 .padding(innerPadding)
                 .consumedWindowInsets(innerPadding)
         ) {
-
             LazyColumn(
                 modifier = Modifier
                     .padding(horizontal = 8.dp)
