@@ -8,6 +8,8 @@ import com.victorb.lingua.core.deck.entity.Deck
 import com.victorb.lingua.core.deck.repository.DeckRepository
 import com.victorb.lingua.core.mydeck.entity.MyDeck
 import com.victorb.lingua.core.mydeck.repository.MyDeckRepository
+import com.victorb.lingua.core.practice.entity.PracticeSession
+import com.victorb.lingua.core.practice.repository.PracticeRepository
 import com.victorb.lingua.infrastructure.ktx.replaceOrAdd
 import com.victorb.lingua.infrastructure.logger.Logger
 import kotlinx.coroutines.flow.Flow
@@ -20,7 +22,7 @@ import javax.inject.Singleton
 
 @Singleton
 class DeckRepositoryImpl @Inject constructor() :
-    DeckRepository, DeckCardRepository, MyDeckRepository {
+    DeckRepository, DeckCardRepository, MyDeckRepository, PracticeRepository {
 
     private val decks = MutableStateFlow(fakeDecks)
     private val unownedCards = MutableStateFlow(emptyList<DeckCard>())
@@ -118,6 +120,10 @@ class DeckRepositoryImpl @Inject constructor() :
                     )
                 }
             }
+    }
+
+    override suspend fun getSession(deckId: String): PracticeSession? {
+        return null
     }
 
 }

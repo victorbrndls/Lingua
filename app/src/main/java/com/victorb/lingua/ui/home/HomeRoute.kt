@@ -5,12 +5,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.victorb.lingua.ui.mydeck.list.MyDeckListComponent
 import com.victorb.lingua.ui.route.Routes
 import com.victorb.lingua.ui.route.navigate
+import kotlinx.coroutines.delay
 
 @Composable
 fun HomeRoute(
@@ -19,6 +21,11 @@ fun HomeRoute(
     HomeScreen(
         onNavigateToListDeck = { navController.navigate(Routes.DeckLibrary) }
     )
+
+    LaunchedEffect(key1 = true) {
+        delay(100)
+        navController.navigate(Routes.Practice.createRoute("deck1"))
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
