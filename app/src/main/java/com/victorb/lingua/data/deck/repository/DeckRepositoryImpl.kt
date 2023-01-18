@@ -123,7 +123,13 @@ class DeckRepositoryImpl @Inject constructor() :
     }
 
     override suspend fun getSession(deckId: String): PracticeSession? {
-        return null
+        val deckToReview = decks.value.random()
+
+        return PracticeSession(
+            id = UUID.randomUUID().toString(),
+            title = deckToReview.title,
+            cards = deckToReview.cards.take(5)
+        )
     }
 
 }
