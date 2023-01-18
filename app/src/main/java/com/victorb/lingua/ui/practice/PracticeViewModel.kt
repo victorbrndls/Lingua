@@ -6,6 +6,7 @@ import com.victorb.lingua.core.card.entity.DeckCard
 import com.victorb.lingua.core.practice.entity.PracticeSession
 import com.victorb.lingua.core.practice.usecase.CheckPracticeAnswerUseCase
 import com.victorb.lingua.core.practice.usecase.GetPracticeSessionUseCase
+import com.victorb.lingua.core.practice.usecase.PracticeCardUseCase
 import com.victorb.lingua.infrastructure.ktx.onFinally
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PracticeViewModel @Inject constructor(
     private val getPracticeSessionUseCase: GetPracticeSessionUseCase,
-    private val checkPracticeAnswerUseCase: CheckPracticeAnswerUseCase
+    private val checkPracticeAnswerUseCase: CheckPracticeAnswerUseCase,
+    private val practiceCardUseCase: PracticeCardUseCase,
 ) : ViewModel() {
 
     private val _action = MutableSharedFlow<PracticeAction>()
@@ -37,7 +39,7 @@ class PracticeViewModel @Inject constructor(
                 .onFinally { state.isLoading = false }
                 .onSuccess { practice ->
                     practice ?: run {
-                        // todo: handle error
+                        viewModelScope.launch { _action.emit(PracticeAction.NavigateUp) }
                         return@onSuccess
                     }
 
@@ -53,6 +55,14 @@ class PracticeViewModel @Inject constructor(
         val card = currentCard ?: return
 
         val isCorrect = checkPracticeAnswerUseCase.checkAnswer(card, state.answer)
+
+        // We don't want to block the practice, just fire and forget
+        viewModelScope.launch {
+            runCatching { practiceCardUseCase.update(card.id, isCorrect) }
+                .onFailure { /*todo: show non-interruptive error */ }
+        }
+
+        // todo: show cool animation based on isCorrect
 
         state.progress = 1f - (1f / session.cards.size * cardsLeft.size)
         loadNextQuestion()
@@ -71,9 +81,7 @@ class PracticeViewModel @Inject constructor(
     }
 
     private fun endPractice() {
-        viewModelScope.launch {
-            _action.emit(PracticeAction.NavigateUp)
-        }
+        viewModelScope.launch { _action.emit(PracticeAction.NavigateUp) }
     }
 
     private fun PracticeState.applyEntity(practice: PracticeSession) {

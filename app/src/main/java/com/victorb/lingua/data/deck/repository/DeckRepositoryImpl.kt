@@ -6,6 +6,8 @@ import com.victorb.lingua.core.card.repository.DeckCardRepository
 import com.victorb.lingua.core.deck.dto.SaveDeckData
 import com.victorb.lingua.core.deck.entity.Deck
 import com.victorb.lingua.core.deck.repository.DeckRepository
+import com.victorb.lingua.core.mycard.entity.MyCard
+import com.victorb.lingua.core.mycard.entity.MyCardPractice
 import com.victorb.lingua.core.mydeck.entity.MyDeck
 import com.victorb.lingua.core.mydeck.repository.MyDeckRepository
 import com.victorb.lingua.core.practice.entity.PracticeSession
@@ -26,6 +28,7 @@ class DeckRepositoryImpl @Inject constructor() :
 
     private val decks = MutableStateFlow(fakeDecks)
     private val unownedCards = MutableStateFlow(emptyList<DeckCard>())
+    private val myCards = MutableStateFlow(emptyList<MyCard>())
 
     private val cards: Flow<List<DeckCard>>
         get() = combine(decks, unownedCards) { decks, cards ->
@@ -113,7 +116,8 @@ class DeckRepositoryImpl @Inject constructor() :
             .map { decks ->
                 decks.map { deck ->
                     MyDeck(
-                        id = deck.id,
+                        id = UUID.randomUUID().toString(),
+                        deckId = deck.id,
                         title = deck.title,
                         learnedCards = 0,
                         totalCards = deck.cards.size,
@@ -129,6 +133,32 @@ class DeckRepositoryImpl @Inject constructor() :
             id = UUID.randomUUID().toString(),
             title = deckToReview.title,
             cards = deckToReview.cards.take(5)
+        )
+    }
+
+    override suspend fun update(cardId: String, isCorrect: Boolean) {
+        val myCard = myCards.value
+            .firstOrNull { it.cardId == cardId } // todo: also compare user id in future
+            ?: createMyCard(cardId)
+
+        val updatedCard = myCard.copy(
+            practices = myCard.practices + listOf(
+                MyCardPractice(
+                    date = Date(),
+                    isCorrect = isCorrect
+                )
+            )
+        )
+
+        Logger.d("Updated new my card | id=${updatedCard.id}, practices=${updatedCard.practices.size}")
+        myCards.value = myCards.value.replaceOrAdd({ it.id == myCard.id }, updatedCard)
+    }
+
+    private fun createMyCard(cardId: String): MyCard {
+        return MyCard(
+            id = UUID.randomUUID().toString(),
+            cardId = cardId,
+            practices = emptyList()
         )
     }
 

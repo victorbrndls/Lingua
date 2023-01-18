@@ -6,4 +6,6 @@ interface PracticeRepository {
 
     suspend fun getSession(deckId: String): PracticeSession?
 
+    suspend fun update(cardId: String, isCorrect: Boolean)
+
 }

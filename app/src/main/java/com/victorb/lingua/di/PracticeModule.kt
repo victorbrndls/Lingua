@@ -1,10 +1,7 @@
 package com.victorb.lingua.di
 
 import com.victorb.lingua.core.practice.repository.PracticeRepository
-import com.victorb.lingua.core.practice.usecase.CheckPracticeAnswerUseCase
-import com.victorb.lingua.core.practice.usecase.CheckPracticeAnswerUseCaseImpl
-import com.victorb.lingua.core.practice.usecase.GetPracticeSessionUseCase
-import com.victorb.lingua.core.practice.usecase.GetPracticeSessionUseCaseImpl
+import com.victorb.lingua.core.practice.usecase.*
 import com.victorb.lingua.data.deck.repository.DeckRepositoryImpl
 import dagger.Binds
 import dagger.Module
@@ -31,5 +28,9 @@ abstract class PracticeModule {
     abstract fun checkPracticeAnswerUseCase(
         impl: CheckPracticeAnswerUseCaseImpl
     ): CheckPracticeAnswerUseCase
+
+    @Binds
+    @Singleton
+    abstract fun practiceCardUseCase(impl: PracticeCardUseCaseImpl): PracticeCardUseCase
 
 }
