@@ -128,7 +128,9 @@ class DeckRepositoryImpl @Inject constructor() :
 
     override suspend fun getSession(deckId: String): PracticeSession? {
         val deck = decks.value.firstOrNull { it.id == deckId } ?: return null
-        return PracticeSessionCreator.create(deck, myCards.value)
+        return PracticeSessionCreator.create(deck, myCards.value)?.also { practice ->
+            Logger.d("Generated practice session | id=${practice.id} cards=${practice.cards.size}")
+        }
     }
 
     override suspend fun update(cardId: String, isCorrect: Boolean) {

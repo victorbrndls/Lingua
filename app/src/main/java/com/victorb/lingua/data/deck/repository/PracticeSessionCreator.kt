@@ -20,11 +20,13 @@ object PracticeSessionCreator {
 
         val now = Date()
 
-        val sortedCards = availableMyCards.sortedBy { (_, review) ->
-            // if review time is in the future, the result is positive
-            // if review time is in the past, the result is negative
-            review.time - now.time
-        }.map { it.first }
+        val sortedCards = availableMyCards
+            .filter { (_, review) -> review <= now }
+            .sortedBy { (_, review) -> review.time }
+            .map { it.first }
+            .take(8)
+
+        if (sortedCards.isEmpty()) return null
 
         return PracticeSession(
             id = UUID.randomUUID().toString(),
