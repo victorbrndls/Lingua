@@ -7,6 +7,7 @@ import com.victorb.lingua.core.practice.entity.PracticeSession
 import com.victorb.lingua.core.practice.usecase.CheckPracticeAnswerUseCase
 import com.victorb.lingua.core.practice.usecase.GetPracticeSessionUseCase
 import com.victorb.lingua.core.practice.usecase.PracticeCardUseCase
+import com.victorb.lingua.infrastructure.TimedObject
 import com.victorb.lingua.infrastructure.ktx.onFinally
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
@@ -62,7 +63,7 @@ class PracticeViewModel @Inject constructor(
                 .onFailure { /*todo: show non-interruptive error */ }
         }
 
-        // todo: show cool animation based on isCorrect
+        state.flickerBackground = TimedObject.ofNow(isCorrect)
 
         state.progress = 1f - (1f / session.cards.size * cardsLeft.size)
         loadNextQuestion()

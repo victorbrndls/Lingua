@@ -2,6 +2,7 @@ package com.victorb.lingua.core.practice.usecase
 
 import com.victorb.lingua.core.card.entity.DeckCard
 import javax.inject.Inject
+import kotlin.random.Random
 
 interface CheckPracticeAnswerUseCase {
 
@@ -12,7 +13,7 @@ interface CheckPracticeAnswerUseCase {
 class CheckPracticeAnswerUseCaseImpl @Inject constructor() : CheckPracticeAnswerUseCase {
 
     override fun checkAnswer(card: DeckCard, answer: String): Boolean {
-        return true
+        return Random.nextBoolean()
     }
 
 }
