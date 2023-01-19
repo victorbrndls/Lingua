@@ -127,13 +127,8 @@ class DeckRepositoryImpl @Inject constructor() :
     }
 
     override suspend fun getSession(deckId: String): PracticeSession? {
-        val deckToReview = decks.value.random()
-
-        return PracticeSession(
-            id = UUID.randomUUID().toString(),
-            title = deckToReview.title,
-            cards = deckToReview.cards.take(5)
-        )
+        val deck = decks.value.firstOrNull { it.id == deckId } ?: return null
+        return PracticeSessionCreator.create(deck, myCards.value)
     }
 
     override suspend fun update(cardId: String, isCorrect: Boolean) {
