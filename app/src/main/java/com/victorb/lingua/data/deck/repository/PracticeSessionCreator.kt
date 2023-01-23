@@ -36,21 +36,23 @@ object PracticeSessionCreator {
     }
 
     private fun List<Pair<DeckCard, MyCard?>>.mapToNextReviewDate(): List<Pair<DeckCard, Date>> {
-        return map { (card, myCard) ->
-            // If card has never been reviewed, review it now
-            if (myCard == null || myCard.practices.isEmpty()) return@map card to Date()
+        return map { (card, myCard) -> card to getNextReviewDate(card, myCard) }
+    }
 
-            val practices = myCard.practices.sortedBy { it.date }
+    fun getNextReviewDate(card: DeckCard, myCard: MyCard?): Date {
+        // If card has never been reviewed, review it now
+        if (myCard == null || myCard.practices.isEmpty()) return Date(0)
 
-            // If user got last answer wrong, review 8hrs after practice
-            val lastPractice = practices.last()
-            if (!lastPractice.isCorrect) {
-                return@map card to lastPractice.date.plusHours(8)
-            }
+        val practices = myCard.practices.sortedBy { it.date }
 
-            // If user got last answer right, just review in a few hours. This is simplified for now
-            card to Date().plusHours(Random.nextInt(12, 40))
+        // If user got last answer wrong, review 8hrs after practice
+        val lastPractice = practices.last()
+        if (!lastPractice.isCorrect) {
+            return lastPractice.date.plusHours(8)
         }
+
+        // If user got last answer right, just review in a few hours. This is simplified for now
+        return Date().plusHours(Random.nextInt(12, 40))
     }
 
 }

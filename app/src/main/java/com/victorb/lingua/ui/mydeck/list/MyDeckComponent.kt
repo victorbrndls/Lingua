@@ -41,11 +41,12 @@ fun MyDeckComponent(
                             .padding(end = 2.dp)
                     )
                     Text(
-                        text = model.reviewProgress,
+                        text = model.cardsToReview,
                         modifier = Modifier
-                            .padding(end = 8.dp)
                     )
                 }
+
+                Spacer(modifier = Modifier.width(12.dp))
 
                 Row {
                     Icon(
@@ -53,7 +54,7 @@ fun MyDeckComponent(
                         contentDescription = "Words to learn",
                         modifier = Modifier
                             .height(20.dp)
-                            .padding(end = 2.dp)
+                            .padding(end = 4.dp)
                     )
                     Text(
                         text = model.totalProgress,
@@ -76,6 +77,6 @@ data class MyDeckModel(
     val id: String,
     val deckId: String,
     val title: String,
-    val reviewProgress: String,
+    val cardsToReview: String,
     val totalProgress: String,
 )

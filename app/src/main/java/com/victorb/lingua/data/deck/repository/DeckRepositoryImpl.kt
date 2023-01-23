@@ -112,18 +112,33 @@ class DeckRepositoryImpl @Inject constructor() :
     }
 
     override fun observeMyDecks(): Flow<List<MyDeck>> {
-        return decks
-            .map { decks ->
-                decks.map { deck ->
-                    MyDeck(
-                        id = UUID.randomUUID().toString(),
-                        deckId = deck.id,
-                        title = deck.title,
-                        learnedCards = 0,
-                        totalCards = deck.cards.size,
-                    )
+        return combine(decks, myCards) { decks, myCards ->
+            decks.map { deck ->
+                val cards = deck.cards.map { card ->
+                    card to myCards.find { myCard -> myCard.cardId == card.id }
                 }
+
+                val learnedCards = cards.count { (_, myCard) ->
+                    if (myCard == null) return@count false
+                    myCard.practices.any { it.isCorrect }
+                }
+
+                val now = Date()
+                val cardToReview = cards.count { (card, myCard) ->
+                    val date = PracticeSessionCreator.getNextReviewDate(card, myCard)
+                    date <= now
+                }
+
+                MyDeck(
+                    id = UUID.randomUUID().toString(),
+                    deckId = deck.id,
+                    title = deck.title,
+                    cardsToReview = cardToReview,
+                    learnedCards = learnedCards,
+                    totalCards = deck.cards.size,
+                )
             }
+        }
     }
 
     override suspend fun getSession(deckId: String): PracticeSession? {

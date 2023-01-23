@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import com.victorb.lingua.ui.designsystem.component.LinguaAppBar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 private val rightColor = Color(136, 255, 0, 64)
 private val wrongColor = Color(255, 0, 0, 64)
@@ -39,7 +40,10 @@ fun PracticeRoute(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(deckId) {
-        viewModel.loadPractice(deckId)
+        launch {
+            delay(100)
+            viewModel.loadPractice(deckId)
+        }
 
         viewModel.action.flowWithLifecycle(lifecycle).collectLatest { action ->
             when (action) {

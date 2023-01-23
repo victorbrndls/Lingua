@@ -31,7 +31,7 @@ class MyDeckListViewModel @Inject constructor(
             id = myDeck.id,
             deckId = myDeck.deckId,
             title = myDeck.title,
-            reviewProgress = "${myDeck.totalCards}/${myDeck.totalCards}",
+            cardsToReview = myDeck.cardsToReview.toString(),
             totalProgress = "${myDeck.learnedCards}/${myDeck.totalCards}"
         )
     }
