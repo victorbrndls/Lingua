@@ -23,6 +23,7 @@ class MyDeckListViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     fun onDeckClicked(model: MyDeckModel) {
+        if (model.cardsToReview == "0") return
         viewModelScope.launch { _action.emit(MyDeckListAction.NavigateToPractice(model.deckId)) }
     }
 
