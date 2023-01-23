@@ -41,6 +41,7 @@ fun MyDeckComponent(
 
 data class MyDeckModel(
     val id: String,
+    val deckId: String,
     val title: String,
     val progress: String,
 )
