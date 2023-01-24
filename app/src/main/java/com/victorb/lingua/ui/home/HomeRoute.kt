@@ -7,6 +7,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.victorb.lingua.ui.mydeck.list.MyDeckListComponent
 import com.victorb.lingua.ui.route.Routes
@@ -46,11 +47,14 @@ private fun HomeScreen(
 
                 ProgressCard()
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                PracticeButton()
-
-                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Decks",
+                    fontSize = 22.sp,
+                    modifier = Modifier.padding(horizontal = 8.dp)
+                )
+                // PracticeButton()
 
                 MyDeckListComponent(
                     onNavigateToPractice = onNavigateToPractice,
