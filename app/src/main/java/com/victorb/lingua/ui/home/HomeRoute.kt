@@ -6,9 +6,11 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.victorb.lingua.R
 import com.victorb.lingua.ui.mydeck.list.MyDeckListComponent
 import com.victorb.lingua.ui.route.Routes
 import com.victorb.lingua.ui.route.navigate
@@ -33,7 +35,10 @@ private fun HomeScreen(
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = onNavigateToListDeck) {
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add Deck")
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_folder_black_24),
+                    contentDescription = "Browser decks"
+                )
             }
         }
     ) { innerPadding ->
