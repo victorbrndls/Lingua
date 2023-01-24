@@ -41,7 +41,7 @@ fun MyDeckComponent(
                             .padding(end = 2.dp)
                     )
                     Text(
-                        text = model.cardsToReview,
+                        text = model.cardsToReviewText,
                         modifier = Modifier
                     )
                 }
@@ -57,7 +57,7 @@ fun MyDeckComponent(
                             .padding(end = 4.dp)
                     )
                     Text(
-                        text = model.totalProgress,
+                        text = model.totalProgressText,
                         modifier = Modifier
                     )
                 }
@@ -77,6 +77,7 @@ data class MyDeckModel(
     val id: String,
     val deckId: String,
     val title: String,
-    val cardsToReview: String,
-    val totalProgress: String,
+    val cardsToReview: Int,
+    val cardsToReviewText: String,
+    val totalProgressText: String,
 )

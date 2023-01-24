@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Lingua</string>
+
+    <string name="no_cards_to_review">No cards to review</string>
 </resources>

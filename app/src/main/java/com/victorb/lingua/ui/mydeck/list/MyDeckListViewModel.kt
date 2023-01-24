@@ -20,11 +20,17 @@ class MyDeckListViewModel @Inject constructor(
     var decks: StateFlow<List<MyDeckModel>> = myDecksUseCase
         .observeMyDecks()
         .map { decks -> decks.toModel() }
+        .map { decks -> decks.sortedByDescending { it.cardsToReview } }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), emptyList())
 
     fun onDeckClicked(model: MyDeckModel) {
-        if (model.cardsToReview == "0") return
-        viewModelScope.launch { _action.emit(MyDeckListAction.NavigateToPractice(model.deckId)) }
+        viewModelScope.launch {
+            val action =
+                if (model.cardsToReview <= 0) MyDeckListAction.ShowNoCardsToReviewInfo
+                else MyDeckListAction.NavigateToPractice(model.deckId)
+
+            _action.emit(action)
+        }
     }
 
     private fun List<MyDeck>.toModel() = map { myDeck ->
@@ -32,8 +38,9 @@ class MyDeckListViewModel @Inject constructor(
             id = myDeck.id,
             deckId = myDeck.deckId,
             title = myDeck.title,
-            cardsToReview = myDeck.cardsToReview.toString(),
-            totalProgress = "${myDeck.learnedCards}/${myDeck.totalCards}"
+            cardsToReview = myDeck.cardsToReview,
+            cardsToReviewText = myDeck.cardsToReview.toString(),
+            totalProgressText = "${myDeck.learnedCards}/${myDeck.totalCards}"
         )
     }
 
@@ -41,4 +48,5 @@ class MyDeckListViewModel @Inject constructor(
 
 sealed interface MyDeckListAction {
     data class NavigateToPractice(val deckId: String) : MyDeckListAction
+    object ShowNoCardsToReviewInfo : MyDeckListAction
 }
