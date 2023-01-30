@@ -27,7 +27,7 @@ class CheckPracticeAnswerUseCaseImpl @Inject constructor() : CheckPracticeAnswer
         return Wrong
     }
 
-    private fun String.normalize() = trim().replace(charsToIgnore, "")
+    private fun String.normalize() = trim().replace(charsToIgnore, "").lowercase()
     private fun List<String>.normalize() = map { it.normalize() }
 
 }
@@ -36,5 +36,6 @@ sealed interface CheckPracticeAnswerResponse {
     data class Correct(val isExactAnswer: Boolean) : CheckPracticeAnswerResponse
     object Wrong : CheckPracticeAnswerResponse
 
-    fun isCorrect() = this is Correct
+    val isCorrect: Boolean
+        get() = this is Correct
 }
