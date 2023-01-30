@@ -55,15 +55,15 @@ class PracticeViewModel @Inject constructor(
     fun checkAnswer() {
         val card = currentCard ?: return
 
-        val isCorrect = checkPracticeAnswerUseCase.checkAnswer(card, state.answer)
+        val result = checkPracticeAnswerUseCase.checkAnswer(card, state.answer)
 
         // We don't want to block the practice, just fire and forget
         viewModelScope.launch {
-            runCatching { practiceCardUseCase.update(card.id, isCorrect) }
+            runCatching { practiceCardUseCase.update(card.id, result.isCorrect()) }
                 .onFailure { /*todo: show non-interruptive error */ }
         }
 
-        state.flickerBackground = TimedObject.ofNow(isCorrect)
+        state.flickerBackground = TimedObject.ofNow(result.isCorrect())
 
         state.progress = 1f - (1f / session.cards.size * cardsLeft.size)
         loadNextQuestion()
@@ -77,7 +77,7 @@ class PracticeViewModel @Inject constructor(
 
         cardsLeft = cardsLeft - nextCard
         currentCard = nextCard
-        state.question = nextCard.input
+        state.question = "${nextCard.input} (${nextCard.outputs})"
         state.answer = ""
     }
 
