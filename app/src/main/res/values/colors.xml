@@ -8,7 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="continue_unknown_answer">#42A5F5</color>
+    <color name="check_unknown_answer">#42A5F5</color>
     <color name="continue_correct_answer">#66BB6A</color>
     <color name="continue_wrong_answer">#EC407A</color>
 </resources>

@@ -23,8 +23,12 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,7 +64,10 @@ fun PracticeRoute(
             when (action) {
                 PracticeAction.NavigateUp -> navController.navigateUp()
                 PracticeAction.CloseKeyboard -> keyboardController?.hide()
-                PracticeAction.OpenKeyboard -> focusRequester.requestFocus()
+                PracticeAction.OpenKeyboard -> {
+                    focusRequester.requestFocus()
+                    keyboardController?.show()
+                }
             }
         }
     }
@@ -128,6 +135,7 @@ private fun PracticeScreen(
                         value = state.answer,
                         onValueChange = { state.answer = it },
                         label = { Text(text = "Answer") },
+                        enabled = state.isAnswerFieldEnabled,
                         maxLines = 1,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { onContinue() }),
@@ -142,12 +150,12 @@ private fun PracticeScreen(
                     Button(
                         onClick = onContinue,
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(id = state.continueButtonColorRes)
+                            containerColor = colorResource(id = state.mainButtonColorRes)
                         ),
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     ) {
                         Text(
-                            text = stringResource(id = state.continueButtonTextRes)
+                            text = stringResource(id = state.mainButtonTextRes)
                         )
                     }
 
@@ -162,10 +170,28 @@ private fun PracticeScreen(
                                 .background(colorResource(id = bgColor))
                                 .padding(horizontal = 12.dp, vertical = 20.dp)
                         ) {
-                            Text(
-                                text = state.infoText ?: "",
-                                color = Color.White,
-                                fontSize = 18.sp
+                            Text(buildAnnotatedString {
+                                withStyle(
+                                    SpanStyle(
+                                        color = Color.White,
+                                        fontSize = 18.sp
+                                    )
+                                ) {
+                                    append(stringResource(id = R.string.correct_answer_info))
+                                }
+
+                                append(" ")
+
+                                withStyle(
+                                    SpanStyle(
+                                        color = Color.White,
+                                        fontSize = 18.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                ) {
+                                    append(state.infoText ?: "")
+                                }
+                            }
                             )
                         }
                     }

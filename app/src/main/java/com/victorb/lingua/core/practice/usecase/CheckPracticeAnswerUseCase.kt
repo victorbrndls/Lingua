@@ -22,7 +22,7 @@ class CheckPracticeAnswerUseCaseImpl @Inject constructor() : CheckPracticeAnswer
         if (normalizedAnswer.isBlank())
             return Wrong
         if (normalizedOutputs.any { it == normalizedAnswer })
-            return Correct(isExactAnswer = card.outputs.any { it == answer })
+            return Correct(isExactAnswer = true)
 
         return Wrong
     }

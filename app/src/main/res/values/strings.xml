@@ -3,6 +3,7 @@
 
     <string name="no_cards_to_review">No cards to review</string>
 
-    <string name="practice_check_button">Check</string>
-    <string name="practice_continue_button">Continue</string>
+    <string name="practice_check">Check</string>
+    <string name="practice_continue">Continue</string>
+    <string name="correct_answer_info">Correct:</string>
 </resources>

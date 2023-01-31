@@ -65,7 +65,6 @@ class PracticeViewModel @Inject constructor(
 
     private fun checkAnswer() {
         val card = currentCard ?: return
-
         val result = checkPracticeAnswerUseCase.checkAnswer(card, state.answer)
 
         // We don't want to block the practice, just fire and forget
@@ -74,6 +73,12 @@ class PracticeViewModel @Inject constructor(
                 .onFailure { /*todo: show non-interruptive error */ }
         }
 
+        updateStateAfterAnswer(result, card)
+    }
+
+    private fun updateStateAfterAnswer(
+        result: CheckPracticeAnswerResponse, card: DeckCard
+    ) {
         state.flickerBackground = TimedObject.ofNow(result.isCorrect)
         state.progress = 1f - (1f / session.cards.size * cardsLeft.size)
 
@@ -82,17 +87,14 @@ class PracticeViewModel @Inject constructor(
         } else {
             viewModelScope.launch { _action.emit(PracticeAction.CloseKeyboard) }
 
-            state.continueButtonTextRes = R.string.practice_continue_button
+            val backgroundColor =
+                if (result.isCorrect) R.color.continue_correct_answer
+                else R.color.continue_wrong_answer
 
-            if (result.isCorrect) {
-                state.continueButtonColorRes = R.color.continue_correct_answer
-                state.infoText = card.outputs.first()
-                state.infoBackgroundColorRes = R.color.continue_correct_answer
-            } else {
-                state.continueButtonColorRes = R.color.continue_wrong_answer
-                state.infoText = card.outputs.first()
-                state.infoBackgroundColorRes = R.color.continue_wrong_answer
-            }
+            state.mainButtonTextRes = R.string.practice_continue
+            state.infoText = card.outputs.first()
+            state.mainButtonColorRes = backgroundColor
+            state.infoBackgroundColorRes = backgroundColor
         }
     }
 
@@ -107,11 +109,17 @@ class PracticeViewModel @Inject constructor(
 
         state.question = "${nextCard.input} (${nextCard.outputs})"
         state.answer = ""
-        state.continueButtonTextRes = R.string.practice_check_button
-        state.continueButtonColorRes = R.color.continue_unknown_answer
+        state.mainButtonTextRes = R.string.practice_check
+        state.mainButtonColorRes = R.color.check_unknown_answer
         state.infoText = null
 
-        viewModelScope.launch { _action.emit(PracticeAction.OpenKeyboard) }
+        viewModelScope.launch {
+            /** The answer text field is disabled if the user gets the answer wrong, it's enabled
+             *  again when we set [infoText] to null but that takes a few milliseconds. We can't
+             *  open the keyboard until it's enabled so we have a small delay here */
+            delay(200)
+            _action.emit(PracticeAction.OpenKeyboard)
+        }
     }
 
     private fun endPractice() {
