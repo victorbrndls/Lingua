@@ -11,7 +11,11 @@ interface CheckPracticeAnswerUseCase {
 
 }
 
-class CheckPracticeAnswerUseCaseImpl @Inject constructor() : CheckPracticeAnswerUseCase {
+private const val WORD_DISTANCE_THRESHOLD = 5
+
+class CheckPracticeAnswerUseCaseImpl @Inject constructor(
+    private val wordDistanceCalculator: WordDistanceCalculator
+) : CheckPracticeAnswerUseCase {
 
     private val charsToIgnore = Regex("[?!,.;\"']")
 
@@ -23,6 +27,11 @@ class CheckPracticeAnswerUseCaseImpl @Inject constructor() : CheckPracticeAnswer
             return Wrong
         if (normalizedOutputs.any { it == normalizedAnswer })
             return Correct(isExactAnswer = true)
+
+        normalizedOutputs.forEach { output ->
+            val distance = wordDistanceCalculator.calculate(normalizedAnswer, output)
+            if (distance <= WORD_DISTANCE_THRESHOLD) return Correct(isExactAnswer = false)
+        }
 
         return Wrong
     }

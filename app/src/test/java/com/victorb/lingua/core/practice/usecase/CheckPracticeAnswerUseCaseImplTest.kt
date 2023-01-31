@@ -42,7 +42,7 @@ internal class CheckPracticeAnswerUseCaseImplTest {
 
         val result = useCase.checkAnswer(card1, answer)
 
-        assertEquals(Correct(isExactAnswer = false), result)
+        assertEquals(Correct(isExactAnswer = true), result)
     }
 
     @Test
@@ -51,7 +51,7 @@ internal class CheckPracticeAnswerUseCaseImplTest {
 
         val result = useCase.checkAnswer(card1, answer)
 
-        assertEquals(Correct(isExactAnswer = false), result)
+        assertEquals(Correct(isExactAnswer = true), result)
     }
 
     @Test
@@ -60,7 +60,7 @@ internal class CheckPracticeAnswerUseCaseImplTest {
 
         val result = useCase.checkAnswer(card2, answer)
 
-        assertEquals(Correct(isExactAnswer = false), result)
+        assertEquals(Correct(isExactAnswer = true), result)
     }
 
     @Test
@@ -70,6 +70,22 @@ internal class CheckPracticeAnswerUseCaseImplTest {
         val result = useCase.checkAnswer(card2, answer)
 
         assertEquals(Wrong, result)
+    }
+
+    @Test
+    fun approximateAnswerIsCorrect() {
+        val answers = listOf(
+            "What is you nam",
+            "What is your n",
+            "What your name",
+            "What's your name",
+        )
+
+        answers.forEach { answer ->
+            val result = useCase.checkAnswer(card2, answer)
+
+            assertEquals(Correct(isExactAnswer = false), result)
+        }
     }
 
     private fun card(

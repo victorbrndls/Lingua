@@ -4,10 +4,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.victorb.lingua.core.mydeck.entity.MyDeck
 import com.victorb.lingua.core.mydeck.usecase.MyDecksUseCase
+import com.victorb.lingua.ui.designsystem.theme.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+
+private val deckBackgroundColors = setOf(
+    Purple200,
+    Teal200,
+    Red200,
+    Blue200,
+    Green200
+)
 
 @HiltViewModel
 class MyDeckListViewModel @Inject constructor(
@@ -40,7 +49,8 @@ class MyDeckListViewModel @Inject constructor(
             title = myDeck.title,
             cardsToReview = myDeck.cardsToReview,
             cardsToReviewText = myDeck.cardsToReview.toString(),
-            totalProgressText = "${myDeck.learnedCards}/${myDeck.totalCards}"
+            totalProgressText = "${myDeck.learnedCards}/${myDeck.totalCards}",
+            backgroundColor = deckBackgroundColors.random()
         )
     }
 

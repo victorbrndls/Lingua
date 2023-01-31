@@ -1,5 +1,6 @@
 package com.victorb.lingua.ui.mydeck.list
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -7,8 +8,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.victorb.lingua.R
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,7 +28,9 @@ fun MyDeckComponent(
             .fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(model.backgroundColor)
         ) {
             Row(
                 horizontalArrangement = Arrangement.End,
@@ -50,7 +56,7 @@ fun MyDeckComponent(
 
                 Row {
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_add_task_black_24),
+                        painter = painterResource(id = R.drawable.iccheck_circle_outline_black_24),
                         contentDescription = "Words to learn",
                         modifier = Modifier
                             .height(20.dp)
@@ -67,6 +73,8 @@ fun MyDeckComponent(
 
             Text(
                 text = model.title,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
                 modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
             )
         }
@@ -80,4 +88,6 @@ data class MyDeckModel(
     val cardsToReview: Int,
     val cardsToReviewText: String,
     val totalProgressText: String,
+
+    val backgroundColor: Color,
 )
