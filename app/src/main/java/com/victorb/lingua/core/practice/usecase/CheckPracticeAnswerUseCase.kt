@@ -11,7 +11,7 @@ interface CheckPracticeAnswerUseCase {
 
 }
 
-private const val WORD_DISTANCE_THRESHOLD = 5
+private const val WORD_DISTANCE_THRESHOLD = 4
 
 class CheckPracticeAnswerUseCaseImpl @Inject constructor(
     private val wordDistanceCalculator: WordDistanceCalculator

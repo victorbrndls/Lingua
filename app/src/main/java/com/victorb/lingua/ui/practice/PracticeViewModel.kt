@@ -1,5 +1,7 @@
 package com.victorb.lingua.ui.practice
 
+import android.view.KeyEvent
+import androidx.compose.ui.input.key.NativeKeyEvent
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.victorb.lingua.R
@@ -12,12 +14,18 @@ import com.victorb.lingua.core.practice.usecase.PracticeCardUseCase
 import com.victorb.lingua.infrastructure.TimedObject
 import com.victorb.lingua.infrastructure.ktx.onFinally
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+private const val KEY_INPUT_DEBOUNCE_DELAY = 50L
+
+@OptIn(FlowPreview::class)
 @HiltViewModel
 class PracticeViewModel @Inject constructor(
     private val getPracticeSessionUseCase: GetPracticeSessionUseCase,
@@ -28,11 +36,24 @@ class PracticeViewModel @Inject constructor(
     private val _action = MutableSharedFlow<PracticeAction>()
     val action: Flow<PracticeAction> = _action
 
+    private val enterEventChannel = MutableSharedFlow<Any>(
+        extraBufferCapacity = 1,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
+
     val state = PracticeState()
 
     private lateinit var session: PracticeSession
     private var cardsLeft: List<DeckCard> = emptyList()
     private var currentCard: DeckCard? = null
+
+    init {
+        viewModelScope.launch {
+            enterEventChannel
+                .debounce(KEY_INPUT_DEBOUNCE_DELAY)
+                .collect { onContinue() }
+        }
+    }
 
     fun loadPractice(deckId: String) {
         viewModelScope.launch {
@@ -53,6 +74,18 @@ class PracticeViewModel @Inject constructor(
                     loadNextQuestion()
                 }
         }
+    }
+
+    fun onAnswerChanged(answer: String) {
+        if (!state.isAnswerFieldEnabled) return
+        state.answer = answer
+    }
+
+    fun onKeyEvent(keyEvent: NativeKeyEvent): Boolean {
+        if (keyEvent.keyCode != KeyEvent.KEYCODE_ENTER) return false
+
+        enterEventChannel.tryEmit(Unit)
+        return true
     }
 
     fun onContinue() {

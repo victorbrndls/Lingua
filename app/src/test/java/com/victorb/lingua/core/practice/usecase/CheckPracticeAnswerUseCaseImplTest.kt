@@ -24,7 +24,7 @@ internal class CheckPracticeAnswerUseCaseImplTest {
 
     @Before
     fun setup() {
-        useCase = CheckPracticeAnswerUseCaseImpl()
+        useCase = CheckPracticeAnswerUseCaseImpl(WordDistanceCalculator())
     }
 
     @Test
@@ -78,13 +78,13 @@ internal class CheckPracticeAnswerUseCaseImplTest {
             "What is you nam",
             "What is your n",
             "What your name",
-            "What's your name",
+            "What's your namee",
         )
 
         answers.forEach { answer ->
             val result = useCase.checkAnswer(card2, answer)
 
-            assertEquals(Correct(isExactAnswer = false), result)
+            assertEquals(answer to Correct(isExactAnswer = false), answer to result)
         }
     }
 

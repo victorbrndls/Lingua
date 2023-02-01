@@ -1,5 +1,6 @@
 package com.victorb.lingua.ui.practice
 
+import android.view.KeyEvent.KEYCODE_ENTER
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
@@ -19,6 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.key.NativeKeyEvent
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -74,6 +77,8 @@ fun PracticeRoute(
 
     PracticeScreen(
         state = viewModel.state,
+        onAnswerChanged = viewModel::onAnswerChanged,
+        onKeyEvent = viewModel::onKeyEvent,
         onContinue = viewModel::onContinue,
         onNavigateUp = { navController.navigateUp() },
         inputFocusRequester = focusRequester
@@ -84,6 +89,8 @@ fun PracticeRoute(
 @Composable
 private fun PracticeScreen(
     state: PracticeState,
+    onAnswerChanged: (String) -> Unit,
+    onKeyEvent: (NativeKeyEvent) -> Boolean,
     onContinue: () -> Unit,
     onNavigateUp: () -> Unit,
     inputFocusRequester: FocusRequester,
@@ -133,9 +140,8 @@ private fun PracticeScreen(
 
                     TextField(
                         value = state.answer,
-                        onValueChange = { state.answer = it },
+                        onValueChange = onAnswerChanged,
                         label = { Text(text = "Answer") },
-                        enabled = state.isAnswerFieldEnabled,
                         maxLines = 1,
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                         keyboardActions = KeyboardActions(onDone = { onContinue() }),
@@ -143,6 +149,7 @@ private fun PracticeScreen(
                             .fillMaxWidth()
                             .padding(horizontal = 12.dp)
                             .focusRequester(inputFocusRequester)
+                            .onKeyEvent { onKeyEvent(it.nativeKeyEvent) }
                     )
 
                     Spacer(modifier = Modifier.height(48.dp))
