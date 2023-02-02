@@ -5,13 +5,13 @@ import com.victorb.lingua.core.practice.usecase.CheckPracticeAnswerResponse.Corr
 import com.victorb.lingua.core.practice.usecase.CheckPracticeAnswerResponse.Wrong
 import javax.inject.Inject
 
+private const val WORD_DIFF_THRESHOLD = 0.2
+
 interface CheckPracticeAnswerUseCase {
 
     fun checkAnswer(card: DeckCard, answer: String): CheckPracticeAnswerResponse
 
 }
-
-private const val WORD_DISTANCE_THRESHOLD = 4
 
 class CheckPracticeAnswerUseCaseImpl @Inject constructor(
     private val wordDistanceCalculator: WordDistanceCalculator
@@ -30,7 +30,8 @@ class CheckPracticeAnswerUseCaseImpl @Inject constructor(
 
         normalizedOutputs.forEach { output ->
             val distance = wordDistanceCalculator.calculate(normalizedAnswer, output)
-            if (distance <= WORD_DISTANCE_THRESHOLD) return Correct(isExactAnswer = false)
+            val threshold = (output.length * WORD_DIFF_THRESHOLD).toInt()
+            if (distance <= threshold) return Correct(isExactAnswer = false)
         }
 
         return Wrong
