@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.victorb.lingua.R
 import com.victorb.lingua.core.card.entity.DeckCard
 import com.victorb.lingua.core.practice.entity.PracticeSession
+import com.victorb.lingua.core.practice.entity.PracticeType
 import com.victorb.lingua.core.practice.usecase.CheckPracticeAnswerResponse
 import com.victorb.lingua.core.practice.usecase.CheckPracticeAnswerUseCase
 import com.victorb.lingua.core.practice.usecase.GetPracticeSessionUseCase
@@ -44,7 +45,7 @@ class PracticeViewModel @Inject constructor(
     val state = PracticeState()
 
     private lateinit var session: PracticeSession
-    private var cardsLeft: List<DeckCard> = emptyList()
+    private var cardsLeft: List<PracticeType> = emptyList()
     private var currentCard: DeckCard? = null
 
     init {
@@ -132,21 +133,37 @@ class PracticeViewModel @Inject constructor(
     }
 
     private fun loadNextQuestion() {
-        val nextCard = cardsLeft.firstOrNull() ?: run {
+        val nextType = cardsLeft.firstOrNull() ?: run {
             endPractice()
             return
         }
+        val nextCard = nextType.card
 
-        cardsLeft = cardsLeft - nextCard
+        cardsLeft = cardsLeft - nextType
         currentCard = nextCard
 
-        state.question = "${nextCard.input} (${nextCard.outputs})"
+        when (nextType) {
+            is PracticeType.TypeAnswer -> {
+                state.practiceType = PracticeTypeModel.TypeAnswer(
+                    question = "${nextCard.input} (${nextCard.outputs})"
+                )
+            }
+            is PracticeType.MultipleOption -> {
+                state.practiceType = PracticeTypeModel.MultipleOptions(
+                    question = "${nextCard.input} (${nextCard.outputs})",
+                    options = nextType.options
+                )
+            }
+        }
+
         state.answer = ""
         state.mainButtonTextRes = R.string.practice_check
         state.mainButtonColorRes = R.color.check_unknown_answer
         state.infoText = null
 
         viewModelScope.launch {
+            if (nextType !is PracticeType.TypeAnswer) return@launch
+
             /** The answer text field is disabled if the user gets the answer wrong, it's enabled
              *  again when we set [infoText] to null but that takes a few milliseconds. We can't
              *  open the keyboard until it's enabled so we have a small delay here */

@@ -13,6 +13,7 @@ class PracticeState {
 
     var title: String by mutableStateOf("")
 
+    var practiceType: PracticeTypeModel? by mutableStateOf(null)
     var question: String by mutableStateOf("")
     var answer: String by mutableStateOf("")
 
@@ -30,3 +31,43 @@ class PracticeState {
 
 }
 
+sealed interface PracticeTypeModel {
+    class TypeAnswer(question: String) : PracticeTypeModel {
+        var question: String by mutableStateOf(question)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as TypeAnswer
+
+            if (question != other.question) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return question.hashCode()
+        }
+    }
+
+    class MultipleOptions(question: String, options: List<String>) : PracticeTypeModel {
+        var question: String by mutableStateOf(question)
+        var options: List<String> by mutableStateOf(options)
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (javaClass != other?.javaClass) return false
+
+            other as MultipleOptions
+
+            if (options != other.options) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return options.hashCode()
+        }
+    }
+}

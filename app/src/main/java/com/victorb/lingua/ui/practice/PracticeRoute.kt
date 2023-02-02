@@ -1,11 +1,11 @@
 package com.victorb.lingua.ui.practice
 
-import android.view.KeyEvent.KEYCODE_ENTER
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -39,6 +39,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import com.victorb.lingua.R
 import com.victorb.lingua.ui.designsystem.component.LinguaAppBar
+import com.victorb.lingua.ui.designsystem.theme.Purple200
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -128,29 +129,26 @@ private fun PracticeScreen(
                 ) {
                     Spacer(modifier = Modifier.height(96.dp))
 
-                    Box(modifier = Modifier.padding(horizontal = 12.dp)) {
-                        Text(
-                            text = state.question,
-                            fontSize = 28.sp,
-                            textAlign = TextAlign.Center,
-                        )
+                    when (state.practiceType) {
+                        is PracticeTypeModel.TypeAnswer -> {
+                            typeAnswerComponent(
+                                state = state,
+                                practiceTypeModel = state.practiceType as PracticeTypeModel.TypeAnswer,
+                                onAnswerChanged = onAnswerChanged,
+                                onContinue = onContinue,
+                                inputFocusRequester = inputFocusRequester,
+                                onKeyEvent = onKeyEvent
+                            )
+                        }
+                        is PracticeTypeModel.MultipleOptions -> {
+                            multipleOptionsComponent(
+                                practiceTypeModel = state.practiceType as PracticeTypeModel.MultipleOptions,
+                                onAnswerChanged = onAnswerChanged,
+                                onContinue = onContinue,
+                            )
+                        }
+                        null -> {}
                     }
-
-                    Spacer(modifier = Modifier.height(130.dp))
-
-                    TextField(
-                        value = state.answer,
-                        onValueChange = onAnswerChanged,
-                        label = { Text(text = "Answer") },
-                        maxLines = 1,
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(onDone = { onContinue() }),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 12.dp)
-                            .focusRequester(inputFocusRequester)
-                            .onKeyEvent { onKeyEvent(it.nativeKeyEvent) }
-                    )
 
                     Spacer(modifier = Modifier.height(48.dp))
 
@@ -210,5 +208,78 @@ private fun PracticeScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalMaterial3Api::class)
+private fun typeAnswerComponent(
+    state: PracticeState,
+    practiceTypeModel: PracticeTypeModel.TypeAnswer,
+    onAnswerChanged: (String) -> Unit,
+    onContinue: () -> Unit,
+    inputFocusRequester: FocusRequester,
+    onKeyEvent: (NativeKeyEvent) -> Boolean
+) {
+    Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+        Text(
+            text = practiceTypeModel.question,
+            fontSize = 28.sp,
+            textAlign = TextAlign.Center,
+        )
+    }
+
+    Spacer(modifier = Modifier.height(130.dp))
+
+    TextField(
+        value = state.answer,
+        onValueChange = onAnswerChanged,
+        label = { Text(text = "Answer") },
+        maxLines = 1,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { onContinue() }),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp)
+            .focusRequester(inputFocusRequester)
+            .onKeyEvent { onKeyEvent(it.nativeKeyEvent) }
+    )
+}
+
+@Composable
+private fun multipleOptionsComponent(
+    practiceTypeModel: PracticeTypeModel.MultipleOptions,
+    onAnswerChanged: (String) -> Unit,
+    onContinue: () -> Unit,
+) {
+    Box(modifier = Modifier.padding(horizontal = 12.dp)) {
+        Text(
+            text = practiceTypeModel.question,
+            fontSize = 28.sp,
+            textAlign = TextAlign.Center,
+        )
+    }
+
+    Spacer(modifier = Modifier.height(130.dp))
+
+    practiceTypeModel.options.forEach { option ->
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 6.dp)
+                .background(Purple200)
+                .clickable {
+                    onAnswerChanged(option)
+                    onContinue()
+                }
+        ) {
+            Text(
+                text = option,
+                fontSize = 20.sp,
+                modifier = Modifier
+            )
+        }
+        Spacer(modifier = Modifier.height(2.dp))
     }
 }

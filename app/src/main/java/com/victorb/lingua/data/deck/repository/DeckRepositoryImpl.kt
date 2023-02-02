@@ -124,8 +124,8 @@ class DeckRepositoryImpl @Inject constructor() :
                 }
 
                 val now = Date()
-                val cardToReview = cards.count { (card, myCard) ->
-                    val date = PracticeSessionCreator.getNextReviewDate(card, myCard)
+                val cardToReview = cards.count { (_, myCard) ->
+                    val date = PracticeSessionCreator.getNextReviewDate(myCard)
                     date <= now
                 }
 
