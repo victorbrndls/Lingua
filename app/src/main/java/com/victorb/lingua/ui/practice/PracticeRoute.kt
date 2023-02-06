@@ -39,7 +39,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import com.victorb.lingua.R
 import com.victorb.lingua.ui.designsystem.component.LinguaAppBar
-import com.victorb.lingua.ui.designsystem.theme.Purple200
+import com.victorb.lingua.ui.designsystem.theme.Blue200
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -263,12 +263,11 @@ private fun multipleOptionsComponent(
     Spacer(modifier = Modifier.height(130.dp))
 
     practiceTypeModel.options.forEach { option ->
-        Box(
-            contentAlignment = Alignment.Center,
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Blue200),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 6.dp)
-                .background(Purple200)
+                .padding(horizontal = 12.dp, vertical = 4.dp)
                 .clickable {
                     onAnswerChanged(option)
                     onContinue()
@@ -276,10 +275,13 @@ private fun multipleOptionsComponent(
         ) {
             Text(
                 text = option,
-                fontSize = 20.sp,
+                fontSize = 24.sp,
                 modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 4.dp)
             )
         }
+
         Spacer(modifier = Modifier.height(2.dp))
     }
 }

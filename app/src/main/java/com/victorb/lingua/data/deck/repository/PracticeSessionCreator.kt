@@ -10,7 +10,7 @@ import java.util.*
 import kotlin.random.Random
 import kotlin.random.nextInt
 
-private const val MULTIPLE_OPTION_PROB = 50
+private const val MULTIPLE_OPTION_PROBABILITY = 30
 
 // This is a temporary class on the client, in the future it'll be in the backend
 object PracticeSessionCreator {
@@ -35,7 +35,7 @@ object PracticeSessionCreator {
             .take(8)
             .map { card ->
                 if (card.outputs.none { it.contains(" ") }) {
-                    if (Random.nextInt(1..100) <= MULTIPLE_OPTION_PROB) {
+                    if (Random.nextInt(1..100) <= MULTIPLE_OPTION_PROBABILITY) {
                         return@map PracticeType.MultipleOption(
                             card = card,
                             options = sortedCards.shuffled()
