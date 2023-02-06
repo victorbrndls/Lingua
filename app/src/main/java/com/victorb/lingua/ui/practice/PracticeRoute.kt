@@ -129,20 +129,20 @@ private fun PracticeScreen(
                 ) {
                     Spacer(modifier = Modifier.height(96.dp))
 
-                    when (state.practiceType) {
-                        is PracticeTypeModel.TypeAnswer -> {
-                            typeAnswerComponent(
+                    when (state.cardPractice) {
+                        is CardPracticeModel.TextField -> {
+                            TypeAnswerComponent(
                                 state = state,
-                                practiceTypeModel = state.practiceType as PracticeTypeModel.TypeAnswer,
+                                practiceTypeModel = state.cardPractice as CardPracticeModel.TextField,
                                 onAnswerChanged = onAnswerChanged,
                                 onContinue = onContinue,
                                 inputFocusRequester = inputFocusRequester,
                                 onKeyEvent = onKeyEvent
                             )
                         }
-                        is PracticeTypeModel.MultipleOptions -> {
-                            multipleOptionsComponent(
-                                practiceTypeModel = state.practiceType as PracticeTypeModel.MultipleOptions,
+                        is CardPracticeModel.VerticalTextOptions -> {
+                            MultipleOptionsComponent(
+                                practiceTypeModel = state.cardPractice as CardPracticeModel.VerticalTextOptions,
                                 onAnswerChanged = onAnswerChanged,
                                 onContinue = onContinue,
                             )
@@ -166,40 +166,7 @@ private fun PracticeScreen(
 
                     Spacer(modifier = Modifier.weight(1f))
 
-                    AnimatedVisibility(visible = state.infoText != null) {
-                        val bgColor = state.infoBackgroundColorRes ?: return@AnimatedVisibility
-
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(colorResource(id = bgColor))
-                                .padding(horizontal = 12.dp, vertical = 20.dp)
-                        ) {
-                            Text(buildAnnotatedString {
-                                withStyle(
-                                    SpanStyle(
-                                        color = Color.White,
-                                        fontSize = 18.sp
-                                    )
-                                ) {
-                                    append(stringResource(id = R.string.correct_answer_info))
-                                }
-
-                                append(" ")
-
-                                withStyle(
-                                    SpanStyle(
-                                        color = Color.White,
-                                        fontSize = 18.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                ) {
-                                    append(state.infoText ?: "")
-                                }
-                            }
-                            )
-                        }
-                    }
+                    InfoBox(state)
                 }
             }
 
@@ -213,9 +180,9 @@ private fun PracticeScreen(
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun typeAnswerComponent(
+private fun TypeAnswerComponent(
     state: PracticeState,
-    practiceTypeModel: PracticeTypeModel.TypeAnswer,
+    practiceTypeModel: CardPracticeModel.TextField,
     onAnswerChanged: (String) -> Unit,
     onContinue: () -> Unit,
     inputFocusRequester: FocusRequester,
@@ -247,8 +214,8 @@ private fun typeAnswerComponent(
 }
 
 @Composable
-private fun multipleOptionsComponent(
-    practiceTypeModel: PracticeTypeModel.MultipleOptions,
+private fun MultipleOptionsComponent(
+    practiceTypeModel: CardPracticeModel.VerticalTextOptions,
     onAnswerChanged: (String) -> Unit,
     onContinue: () -> Unit,
 ) {
@@ -283,5 +250,43 @@ private fun multipleOptionsComponent(
         }
 
         Spacer(modifier = Modifier.height(2.dp))
+    }
+}
+
+@Composable
+private fun InfoBox(state: PracticeState) {
+    AnimatedVisibility(visible = state.infoText != null) {
+        val bgColor = state.infoBackgroundColorRes ?: return@AnimatedVisibility
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(colorResource(id = bgColor))
+                .padding(horizontal = 12.dp, vertical = 20.dp)
+        ) {
+            Text(buildAnnotatedString {
+                withStyle(
+                    SpanStyle(
+                        color = Color.White,
+                        fontSize = 18.sp
+                    )
+                ) {
+                    append(stringResource(id = R.string.correct_answer_info))
+                }
+
+                append(" ")
+
+                withStyle(
+                    SpanStyle(
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                ) {
+                    append(state.infoText ?: "")
+                }
+            }
+            )
+        }
     }
 }

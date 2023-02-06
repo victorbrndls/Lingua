@@ -5,12 +5,15 @@ import com.victorb.lingua.core.card.entity.DeckCard
 data class PracticeSession(
     val id: String,
     val title: String,
-    val cards: List<PracticeType>
+    val cards: List<CardPractice>
 )
 
-sealed interface PracticeType {
-    val card: DeckCard
+sealed interface CardPractice {
+    val card: DeckCard // refers to the card being practiced
 
-    data class TypeAnswer(override val card: DeckCard) : PracticeType
-    data class MultipleOption(override val card: DeckCard, val options: List<String>) : PracticeType
+    data class InputField(override val card: DeckCard) : CardPractice
+
+    data class MultipleTextOptions(
+        override val card: DeckCard, val options: List<String>
+    ) : CardPractice
 }

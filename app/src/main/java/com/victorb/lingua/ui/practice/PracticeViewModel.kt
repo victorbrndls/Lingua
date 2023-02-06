@@ -6,8 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.victorb.lingua.R
 import com.victorb.lingua.core.card.entity.DeckCard
+import com.victorb.lingua.core.practice.entity.CardPractice
 import com.victorb.lingua.core.practice.entity.PracticeSession
-import com.victorb.lingua.core.practice.entity.PracticeType
 import com.victorb.lingua.core.practice.usecase.CheckPracticeAnswerResponse
 import com.victorb.lingua.core.practice.usecase.CheckPracticeAnswerUseCase
 import com.victorb.lingua.core.practice.usecase.GetPracticeSessionUseCase
@@ -45,7 +45,7 @@ class PracticeViewModel @Inject constructor(
     val state = PracticeState()
 
     private lateinit var session: PracticeSession
-    private var cardsLeft: List<PracticeType> = emptyList()
+    private var practicesLeft: List<CardPractice> = emptyList()
     private var currentCard: DeckCard? = null
 
     init {
@@ -70,7 +70,7 @@ class PracticeViewModel @Inject constructor(
                     }
 
                     session = practice
-                    cardsLeft = practice.cards
+                    practicesLeft = practice.cards
                     state.applyEntity(practice)
                     loadNextQuestion()
                 }
@@ -114,7 +114,7 @@ class PracticeViewModel @Inject constructor(
         result: CheckPracticeAnswerResponse, card: DeckCard
     ) {
         state.flickerBackground = TimedObject.ofNow(result.isCorrect)
-        state.progress = 1f - (1f / session.cards.size * cardsLeft.size)
+        state.progress = 1f - (1f / session.cards.size * practicesLeft.size)
 
         if ((result as? CheckPracticeAnswerResponse.Correct)?.isExactAnswer == true) {
             loadNextQuestion()
@@ -133,27 +133,23 @@ class PracticeViewModel @Inject constructor(
     }
 
     private fun loadNextQuestion() {
-        val nextType = cardsLeft.firstOrNull() ?: run {
+        val nextPractice = practicesLeft.firstOrNull() ?: run {
             endPractice()
             return
         }
-        val nextCard = nextType.card
+        val nextCard = nextPractice.card
 
-        cardsLeft = cardsLeft - nextType
+        practicesLeft = practicesLeft - nextPractice
         currentCard = nextCard
 
-        when (nextType) {
-            is PracticeType.TypeAnswer -> {
-                state.practiceType = PracticeTypeModel.TypeAnswer(
-                    question = "${nextCard.input} (${nextCard.outputs})"
-                )
-            }
-            is PracticeType.MultipleOption -> {
-                state.practiceType = PracticeTypeModel.MultipleOptions(
-                    question = "${nextCard.input} (${nextCard.outputs})",
-                    options = nextType.options
-                )
-            }
+        state.cardPractice = when (nextPractice) {
+            is CardPractice.InputField -> CardPracticeModel.TextField(
+                question = "${nextCard.input} (${nextCard.outputs})"
+            )
+            is CardPractice.MultipleTextOptions -> CardPracticeModel.VerticalTextOptions(
+                question = "${nextCard.input} (${nextCard.outputs})",
+                options = nextPractice.options
+            )
         }
 
         state.answer = ""
@@ -162,7 +158,7 @@ class PracticeViewModel @Inject constructor(
         state.infoText = null
 
         viewModelScope.launch {
-            if (nextType !is PracticeType.TypeAnswer) return@launch
+            if (nextPractice !is CardPractice.InputField) return@launch
 
             /** The answer text field is disabled if the user gets the answer wrong, it's enabled
              *  again when we set [infoText] to null but that takes a few milliseconds. We can't
