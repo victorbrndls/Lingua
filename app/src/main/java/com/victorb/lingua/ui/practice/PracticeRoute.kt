@@ -1,7 +1,6 @@
 package com.victorb.lingua.ui.practice
 
-import androidx.compose.animation.Animatable
-import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -32,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -255,7 +255,11 @@ private fun MultipleOptionsComponent(
 
 @Composable
 private fun InfoBox(state: PracticeState) {
-    AnimatedVisibility(visible = state.infoText != null) {
+    AnimatedVisibility(
+        visible = state.infoText != null,
+        enter = fadeIn() + expandIn(initialSize = { IntSize(it.width, 0) }),
+        exit = shrinkOut(targetSize = { IntSize(it.width, 0) }) + fadeOut()
+    ) {
         val bgColor = state.infoBackgroundColorRes ?: return@AnimatedVisibility
 
         Box(

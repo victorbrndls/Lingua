@@ -144,10 +144,10 @@ class PracticeViewModel @Inject constructor(
 
         state.cardPractice = when (nextPractice) {
             is CardPractice.InputField -> CardPracticeModel.TextField(
-                question = "${nextCard.input} (${nextCard.outputs})"
+                question = nextCard.input
             )
             is CardPractice.MultipleTextOptions -> CardPracticeModel.VerticalTextOptions(
-                question = "${nextCard.input} (${nextCard.outputs})",
+                question = nextCard.input,
                 options = nextPractice.options
             )
         }
