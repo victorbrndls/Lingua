@@ -3,8 +3,11 @@ package com.victorb.lingua.di
 import com.victorb.lingua.core.deck.repository.DeckRepository
 import com.victorb.lingua.core.deck.usecase.*
 import com.victorb.lingua.data.deck.repository.DeckRepositoryImpl
+import com.victorb.lingua.data.deck.repository.dao.DeckDao
+import com.victorb.lingua.infrastructure.database.room.AppDatabase
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
@@ -12,6 +15,12 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class DeckModule {
+
+    companion object {
+        @Provides
+        @Singleton
+        fun deckDao(database: AppDatabase): DeckDao = database.deckDao()
+    }
 
     @Binds
     @Singleton
