@@ -2,8 +2,9 @@ package com.victorb.lingua.infrastructure.database.room
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.victorb.lingua.data.deck.repository.dao.DeckDao
-import com.victorb.lingua.data.deck.repository.data.DeckData
+import com.victorb.lingua.data.deck.repository.local.dao.DeckCardDao
+import com.victorb.lingua.data.deck.repository.local.dao.DeckDao
+import com.victorb.lingua.data.deck.repository.local.data.DeckData
 
 @Database(
     entities = [
@@ -12,4 +13,5 @@ import com.victorb.lingua.data.deck.repository.data.DeckData
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun deckDao(): DeckDao
+    abstract fun deckCardDao(): DeckCardDao
 }

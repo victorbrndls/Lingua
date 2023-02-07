@@ -3,7 +3,7 @@ package com.victorb.lingua.di
 import com.victorb.lingua.core.deck.repository.DeckRepository
 import com.victorb.lingua.core.deck.usecase.*
 import com.victorb.lingua.data.deck.repository.DeckRepositoryImpl
-import com.victorb.lingua.data.deck.repository.dao.DeckDao
+import com.victorb.lingua.data.deck.repository.local.dao.DeckDao
 import com.victorb.lingua.infrastructure.database.room.AppDatabase
 import dagger.Binds
 import dagger.Module
