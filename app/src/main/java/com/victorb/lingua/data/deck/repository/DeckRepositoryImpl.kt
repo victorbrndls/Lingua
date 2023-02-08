@@ -12,6 +12,7 @@ import com.victorb.lingua.core.mydeck.entity.MyDeck
 import com.victorb.lingua.core.mydeck.repository.MyDeckRepository
 import com.victorb.lingua.core.practice.entity.PracticeSession
 import com.victorb.lingua.core.practice.repository.PracticeRepository
+import com.victorb.lingua.data.deck.repository.local.LocalDeckDataSource
 import com.victorb.lingua.infrastructure.ktx.replaceOrAdd
 import com.victorb.lingua.infrastructure.logger.Logger
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +24,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class DeckRepositoryImpl @Inject constructor() :
+class DeckRepositoryImpl @Inject constructor(
+    private val localDeckDataSource: LocalDeckDataSource
+) :
     DeckRepository, DeckCardRepository, MyDeckRepository, PracticeRepository {
 
     private val decks = MutableStateFlow(emptyList<Deck>())

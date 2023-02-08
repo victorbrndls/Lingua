@@ -4,11 +4,15 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.victorb.lingua.data.deck.repository.local.data.DeckData
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface DeckDao {
     @Query("SELECT * FROM deck")
     suspend fun getAll(): List<DeckData>
+
+    @Query("SELECT * FROM deck")
+    fun observeAll(): Flow<List<DeckData>>
 
     @Query("SELECT * FROM deck WHERE id = :id LIMIT 1")
     suspend fun getById(id: String): DeckData?
