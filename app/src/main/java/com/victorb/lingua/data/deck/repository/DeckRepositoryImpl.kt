@@ -26,7 +26,7 @@ import javax.inject.Singleton
 class DeckRepositoryImpl @Inject constructor() :
     DeckRepository, DeckCardRepository, MyDeckRepository, PracticeRepository {
 
-    private val decks = MutableStateFlow(fakeDecks)
+    private val decks = MutableStateFlow(emptyList<Deck>())
     private val unownedCards = MutableStateFlow(emptyList<DeckCard>())
     private val myCards = MutableStateFlow(emptyList<MyCard>())
 

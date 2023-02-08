@@ -6,6 +6,7 @@ import com.victorb.lingua.infrastructure.database.room.AppDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
@@ -16,12 +17,14 @@ abstract class RoomModule {
     companion object {
         @Provides
         @Singleton
-        fun database(context: Context): AppDatabase {
+        fun database(@ApplicationContext context: Context): AppDatabase {
             return Room.databaseBuilder(
                 context = context,
                 klass = AppDatabase::class.java,
                 name = "Lingua"
-            ).build()
+            )
+                .fallbackToDestructiveMigration()
+                .build()
         }
     }
 
