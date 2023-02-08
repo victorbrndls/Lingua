@@ -12,20 +12,21 @@ import com.victorb.lingua.core.mydeck.entity.MyDeck
 import com.victorb.lingua.core.mydeck.repository.MyDeckRepository
 import com.victorb.lingua.core.practice.entity.PracticeSession
 import com.victorb.lingua.core.practice.repository.PracticeRepository
+import com.victorb.lingua.data.deck.repository.local.LocalDeckCardDataSource
 import com.victorb.lingua.data.deck.repository.local.LocalDeckDataSource
 import com.victorb.lingua.infrastructure.ktx.replaceOrAdd
 import com.victorb.lingua.infrastructure.logger.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.map
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class DeckRepositoryImpl @Inject constructor(
-    private val localDeckDataSource: LocalDeckDataSource
+    private val localDeckDataSource: LocalDeckDataSource,
+    private val localDeckCardDataSource: LocalDeckCardDataSource
 ) :
     DeckRepository, DeckCardRepository, MyDeckRepository, PracticeRepository {
 
@@ -39,15 +40,13 @@ class DeckRepositoryImpl @Inject constructor(
         }
 
     override suspend fun getCard(id: String): DeckCard? {
-        return (decks.value.flatMap { it.cards } + unownedCards.value)
-            .find { it.id == id }
-            ?.also { Logger.d("Fetched card $id") }
+        return localDeckCardDataSource.getById(id)?.also {
+            Logger.d("Fetched card $id")
+        }
     }
 
     override fun observeCards(deckId: String): Flow<List<DeckCard>> {
-        return cards.map { cards ->
-            cards.filter { card -> card.deckId == deckId }
-        }
+        return localDeckCardDataSource.observeByDeckId(deckId)
     }
 
     override suspend fun saveCard(card: SaveDeckCardData): DeckCard {
@@ -73,11 +72,11 @@ class DeckRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getDeck(id: String): Deck? {
-        return decks.value.find { it.id == id }?.also { Logger.d("Fetched deck $id") }
+        return localDeckDataSource.getById(id).also { Logger.d("Fetched deck $id") }
     }
 
     override suspend fun getDecks(): List<Deck> {
-        return decks.value.also { Logger.d("Fetched ${it.size} decks") }
+        return localDeckDataSource.getAll().also { Logger.d("Fetched ${it.size} decks") }
     }
 
     override suspend fun saveDeck(deck: SaveDeckData): Deck {
