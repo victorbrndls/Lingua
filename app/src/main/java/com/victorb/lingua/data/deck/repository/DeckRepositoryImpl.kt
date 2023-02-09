@@ -8,6 +8,7 @@ import com.victorb.lingua.core.deck.entity.Deck
 import com.victorb.lingua.core.deck.repository.DeckRepository
 import com.victorb.lingua.core.mycard.entity.MyCard
 import com.victorb.lingua.core.mycard.entity.MyCardPractice
+import com.victorb.lingua.core.mycard.repository.MyCardRepository
 import com.victorb.lingua.core.mydeck.entity.MyDeck
 import com.victorb.lingua.core.mydeck.repository.MyDeckRepository
 import com.victorb.lingua.core.practice.entity.PracticeSession
@@ -26,13 +27,12 @@ import javax.inject.Singleton
 @Singleton
 class DeckRepositoryImpl @Inject constructor(
     private val localDeckDataSource: LocalDeckDataSource,
-    private val localDeckCardDataSource: LocalDeckCardDataSource
-) :
-    DeckRepository, DeckCardRepository, MyDeckRepository, PracticeRepository {
+    private val localDeckCardDataSource: LocalDeckCardDataSource,
+    private val myCardRepository: MyCardRepository
+) : DeckRepository, DeckCardRepository, MyDeckRepository, PracticeRepository {
 
     private val decks = MutableStateFlow(emptyList<Deck>())
     private val unownedCards = MutableStateFlow(emptyList<DeckCard>())
-    private val myCards = MutableStateFlow(emptyList<MyCard>())
 
     private val cards: Flow<List<DeckCard>>
         get() = combine(decks, unownedCards) { decks, cards ->
@@ -57,13 +57,12 @@ class DeckRepositoryImpl @Inject constructor(
             outputs = card.outputs,
         )
 
-        decks.value.find { it.id == entity.deckId }?.let { deck ->
-            val updatedCards = deck.cards.replaceOrAdd({ it.id == entity.id }, entity)
-            val updatedDeck = deck.copy(cards = updatedCards)
+        val deck = localDeckDataSource.getById(entity.deckId)
 
-            decks.value = decks.value - deck + updatedDeck
+        if (deck != null) {
+            localDeckCardDataSource.insert(entity)
             Logger.d("Added card to deck | $entity")
-        } ?: run {
+        } else {
             Logger.d("Added card to unowned list | $entity")
             unownedCards.value = unownedCards.value + entity
         }
@@ -114,7 +113,7 @@ class DeckRepositoryImpl @Inject constructor(
     }
 
     override fun observeMyDecks(): Flow<List<MyDeck>> {
-        return combine(decks, myCards) { decks, myCards ->
+        return combine(decks, myCardRepository.observeMyCards()) { decks, myCards ->
             decks.map { deck ->
                 val cards = deck.cards.map { card ->
                     card to myCards.find { myCard -> myCard.cardId == card.id }
@@ -144,16 +143,15 @@ class DeckRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSession(deckId: String): PracticeSession? {
-        val deck = decks.value.firstOrNull { it.id == deckId } ?: return null
-        return PracticeSessionCreator.create(deck, myCards.value)?.also { practice ->
-            Logger.d("Generated practice session | id=${practice.id} cards=${practice.cards.size}")
-        }
+        val deck = localDeckDataSource.getById(deckId) ?: return null
+        return PracticeSessionCreator.create(deck, myCardRepository.getMyCards())
+            ?.also { practice ->
+                Logger.d("Generated practice session | id=${practice.id} cards=${practice.cards.size}")
+            }
     }
 
     override suspend fun update(cardId: String, isCorrect: Boolean) {
-        val myCard = myCards.value
-            .firstOrNull { it.cardId == cardId } // todo: also compare user id in future
-            ?: createMyCard(cardId)
+        val myCard = myCardRepository.getByCardId(cardId) ?: createMyCard(cardId)
 
         val updatedCard = myCard.copy(
             practices = myCard.practices + listOf(
@@ -165,7 +163,7 @@ class DeckRepositoryImpl @Inject constructor(
         )
 
         Logger.d("Updated new my card | id=${updatedCard.id}, practices=${updatedCard.practices.size}")
-        myCards.value = myCards.value.replaceOrAdd({ it.id == myCard.id }, updatedCard)
+        myCardRepository.saveMyCard(updatedCard)
     }
 
     private fun createMyCard(cardId: String): MyCard {
