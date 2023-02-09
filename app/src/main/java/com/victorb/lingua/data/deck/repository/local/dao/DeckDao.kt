@@ -2,6 +2,7 @@ package com.victorb.lingua.data.deck.repository.local.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.victorb.lingua.data.deck.repository.local.data.DeckData
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +18,6 @@ interface DeckDao {
     @Query("SELECT * FROM deck WHERE id = :id LIMIT 1")
     suspend fun getById(id: String): DeckData?
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(deckData: DeckData)
 }

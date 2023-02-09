@@ -17,7 +17,10 @@ class LocalDeckDataSource @Inject constructor(
 ) {
 
     suspend fun getAll(): List<Deck> {
-        return emptyList()
+        return deckDao.getAll().mapNotNull { deckData ->
+            val cardsData = deckCardDao.getByDeckId(deckData.id)
+            deckDataMapper.fromData(deckData, cardsData)
+        }
     }
 
     fun observeAll(): Flow<List<Deck>> = flow {

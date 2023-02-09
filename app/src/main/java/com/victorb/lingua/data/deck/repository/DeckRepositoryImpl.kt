@@ -15,11 +15,8 @@ import com.victorb.lingua.core.practice.entity.PracticeSession
 import com.victorb.lingua.core.practice.repository.PracticeRepository
 import com.victorb.lingua.data.deck.repository.local.LocalDeckCardDataSource
 import com.victorb.lingua.data.deck.repository.local.LocalDeckDataSource
-import com.victorb.lingua.infrastructure.ktx.replaceOrAdd
 import com.victorb.lingua.infrastructure.logger.Logger
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.*
 import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -31,22 +28,24 @@ class DeckRepositoryImpl @Inject constructor(
     private val myCardRepository: MyCardRepository
 ) : DeckRepository, DeckCardRepository, MyDeckRepository, PracticeRepository {
 
-    private val decks = MutableStateFlow(emptyList<Deck>())
     private val unownedCards = MutableStateFlow(emptyList<DeckCard>())
 
-    private val cards: Flow<List<DeckCard>>
-        get() = combine(decks, unownedCards) { decks, cards ->
-            decks.flatMap { it.cards } + cards
-        }
-
     override suspend fun getCard(id: String): DeckCard? {
-        return localDeckCardDataSource.getById(id)?.also {
-            Logger.d("Fetched card $id")
-        }
+        val card =
+            localDeckCardDataSource.getById(id) ?: unownedCards.value.firstOrNull { it.id == id }
+
+        return card?.also { Logger.d("Fetched card $id") }
     }
 
     override fun observeCards(deckId: String): Flow<List<DeckCard>> {
-        return localDeckCardDataSource.observeByDeckId(deckId)
+        val cards = unownedCards
+            .map { cards -> cards.filter { it.deckId == deckId } }
+            .distinctUntilChanged()
+
+        return combine(
+            localDeckCardDataSource.observeByDeckId(deckId),
+            cards
+        ) { fist, second -> fist + second }
     }
 
     override suspend fun saveCard(card: SaveDeckCardData): DeckCard {
@@ -79,8 +78,7 @@ class DeckRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveDeck(deck: SaveDeckData): Deck {
-        decks.value.find { it.id == deck.deckId }?.let { existingDeck ->
-
+        localDeckDataSource.getById(deck.deckId)?.let { existingDeck ->
             val orderedCards = existingDeck.cards.sortedBy { card ->
                 deck.cards.find { card.id == it.cardId }?.position
             }
@@ -90,7 +88,8 @@ class DeckRepositoryImpl @Inject constructor(
                 cards = orderedCards
             )
 
-            decks.value = decks.value.replaceOrAdd({ it.id == existingDeck.id }, updatedDeck)
+            // todo save reordered cards
+            localDeckDataSource.insert(updatedDeck)
             Logger.d("Updated deck | $updatedDeck")
 
             return updatedDeck
@@ -103,8 +102,10 @@ class DeckRepositoryImpl @Inject constructor(
                 cards = cards
             )
 
-            decks.value = decks.value + entity
+            localDeckDataSource.insert(entity)
+            cards.forEach { card -> localDeckCardDataSource.insert(card) }
             unownedCards.value = unownedCards.value - cards.toSet()
+
             Logger.d("Saved new deck | $entity")
             Logger.d("Removed ${cards.size} cards from unowned cards")
 
@@ -113,7 +114,10 @@ class DeckRepositoryImpl @Inject constructor(
     }
 
     override fun observeMyDecks(): Flow<List<MyDeck>> {
-        return combine(decks, myCardRepository.observeMyCards()) { decks, myCards ->
+        return combine(
+            localDeckDataSource.observeAll(),
+            myCardRepository.observeMyCards()
+        ) { decks, myCards ->
             decks.map { deck ->
                 val cards = deck.cards.map { card ->
                     card to myCards.find { myCard -> myCard.cardId == card.id }
@@ -144,10 +148,11 @@ class DeckRepositoryImpl @Inject constructor(
 
     override suspend fun getSession(deckId: String): PracticeSession? {
         val deck = localDeckDataSource.getById(deckId) ?: return null
-        return PracticeSessionCreator.create(deck, myCardRepository.getMyCards())
-            ?.also { practice ->
-                Logger.d("Generated practice session | id=${practice.id} cards=${practice.cards.size}")
-            }
+        return PracticeSessionCreator.create(
+            deck, myCardRepository.getMyCards()
+        )?.also { practice ->
+            Logger.d("Generated practice session | id=${practice.id} cards=${practice.cards.size}")
+        }
     }
 
     override suspend fun update(cardId: String, isCorrect: Boolean) {

@@ -19,11 +19,11 @@ class MyCardRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getMyCards(): List<MyCard> {
-        TODO("Not yet implemented")
+        return localMyCardDataSource.getAll()
     }
 
     override fun observeMyCards(): Flow<List<MyCard>> {
-        TODO("Not yet implemented")
+        return localMyCardDataSource.observeAll()
     }
 
     override suspend fun saveMyCard(myCard: MyCard): MyCard {
