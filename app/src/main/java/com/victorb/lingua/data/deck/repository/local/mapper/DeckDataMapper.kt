@@ -3,6 +3,7 @@ package com.victorb.lingua.data.deck.repository.local.mapper
 import com.victorb.lingua.core.deck.entity.Deck
 import com.victorb.lingua.data.deck.repository.local.data.DeckCardData
 import com.victorb.lingua.data.deck.repository.local.data.DeckData
+import com.victorb.lingua.data.deck.repository.local.dto.DeckCardOutput
 import javax.inject.Inject
 
 class DeckDataMapper @Inject constructor(
@@ -16,8 +17,13 @@ class DeckDataMapper @Inject constructor(
         )
     }
 
-    fun fromData(deck: DeckData, cards: List<DeckCardData>): Deck? {
-        val deckCards = cards.mapNotNull { deckCardDataMapper.fromData(it) }
+    fun fromData(deck: DeckData, cards: List<DeckCardData>, outputs: List<DeckCardOutput>): Deck? {
+        val deckCards = cards.mapNotNull { card ->
+            deckCardDataMapper.fromData(
+                card = card,
+                outputs = outputs.filter { it.cardId == card.id }
+            )
+        }
 
         return Deck(
             id = deck.id,

@@ -2,6 +2,7 @@ package com.victorb.lingua.data.deck.repository.local.mapper
 
 import com.victorb.lingua.core.card.entity.DeckCard
 import com.victorb.lingua.data.deck.repository.local.data.DeckCardData
+import com.victorb.lingua.data.deck.repository.local.dto.DeckCardOutput
 import javax.inject.Inject
 
 class DeckCardDataMapper @Inject constructor() {
@@ -14,12 +15,12 @@ class DeckCardDataMapper @Inject constructor() {
         )
     }
 
-    fun fromData(card: DeckCardData): DeckCard? {
+    fun fromData(card: DeckCardData, outputs: List<DeckCardOutput>): DeckCard? {
         return DeckCard(
             id = card.id,
             deckId = card.deckId,
             input = card.input ?: return null,
-            outputs = emptyList()
+            outputs = outputs.map { it.output }
         )
     }
 

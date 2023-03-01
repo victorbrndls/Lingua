@@ -9,7 +9,7 @@ class DeckCardOutputDataMapper @Inject constructor() {
 
     fun toData(output: DeckCardOutput): DeckCardOutputData {
         return DeckCardOutputData(
-            id = UUID.randomUUID().toString(),
+            id = output.id,
             deckId = output.deckId,
             cardId = output.id,
             output = output.output

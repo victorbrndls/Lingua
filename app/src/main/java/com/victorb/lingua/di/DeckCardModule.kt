@@ -4,6 +4,7 @@ import com.victorb.lingua.core.card.repository.DeckCardRepository
 import com.victorb.lingua.core.card.usecase.*
 import com.victorb.lingua.data.deck.repository.DeckRepositoryImpl
 import com.victorb.lingua.data.deck.repository.local.dao.DeckCardDao
+import com.victorb.lingua.data.deck.repository.local.dao.DeckCardOutputDao
 import com.victorb.lingua.infrastructure.database.room.AppDatabase
 import dagger.Binds
 import dagger.Module
@@ -20,6 +21,12 @@ abstract class DeckCardModule {
         @Provides
         @Singleton
         fun deckCardDao(database: AppDatabase): DeckCardDao = database.deckCardDao()
+
+        @Provides
+        @Singleton
+        fun deckCardOutputDao(
+            database: AppDatabase
+        ): DeckCardOutputDao = database.deckCardOutputDao()
     }
 
     @Binds
