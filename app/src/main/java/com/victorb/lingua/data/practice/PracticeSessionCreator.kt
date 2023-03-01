@@ -1,4 +1,4 @@
-package com.victorb.lingua.data.deck.repository
+package com.victorb.lingua.data.practice
 
 import com.victorb.lingua.core.card.entity.DeckCard
 import com.victorb.lingua.core.deck.entity.Deck

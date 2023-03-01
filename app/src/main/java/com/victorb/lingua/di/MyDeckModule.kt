@@ -3,7 +3,7 @@ package com.victorb.lingua.di
 import com.victorb.lingua.core.mydeck.repository.MyDeckRepository
 import com.victorb.lingua.core.mydeck.usecase.MyDecksUseCase
 import com.victorb.lingua.core.mydeck.usecase.MyDecksUseCaseImpl
-import com.victorb.lingua.data.deck.repository.DeckRepositoryImpl
+import com.victorb.lingua.data.mydeck.repository.MyDeckRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -16,7 +16,7 @@ abstract class MyDeckModule {
 
     @Binds
     @Singleton
-    abstract fun myDeckRepository(impl: DeckRepositoryImpl): MyDeckRepository
+    abstract fun myDeckRepository(impl: MyDeckRepositoryImpl): MyDeckRepository
 
     @Binds
     @Singleton

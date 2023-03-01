@@ -2,7 +2,7 @@ package com.victorb.lingua.di
 
 import com.victorb.lingua.core.practice.repository.PracticeRepository
 import com.victorb.lingua.core.practice.usecase.*
-import com.victorb.lingua.data.deck.repository.DeckRepositoryImpl
+import com.victorb.lingua.data.practice.repository.PracticeRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -15,7 +15,7 @@ abstract class PracticeModule {
 
     @Binds
     @Singleton
-    abstract fun practiceRepository(impl: DeckRepositoryImpl): PracticeRepository
+    abstract fun practiceRepository(impl: PracticeRepositoryImpl): PracticeRepository
 
     @Binds
     @Singleton

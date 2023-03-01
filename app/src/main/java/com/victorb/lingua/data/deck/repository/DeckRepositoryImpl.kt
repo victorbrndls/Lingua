@@ -6,13 +6,6 @@ import com.victorb.lingua.core.card.repository.DeckCardRepository
 import com.victorb.lingua.core.deck.dto.SaveDeckData
 import com.victorb.lingua.core.deck.entity.Deck
 import com.victorb.lingua.core.deck.repository.DeckRepository
-import com.victorb.lingua.core.mycard.entity.MyCard
-import com.victorb.lingua.core.mycard.entity.MyCardPractice
-import com.victorb.lingua.core.mycard.repository.MyCardRepository
-import com.victorb.lingua.core.mydeck.entity.MyDeck
-import com.victorb.lingua.core.mydeck.repository.MyDeckRepository
-import com.victorb.lingua.core.practice.entity.PracticeSession
-import com.victorb.lingua.core.practice.repository.PracticeRepository
 import com.victorb.lingua.data.deck.repository.local.LocalDeckCardDataSource
 import com.victorb.lingua.data.deck.repository.local.LocalDeckDataSource
 import com.victorb.lingua.infrastructure.logger.Logger
@@ -25,8 +18,7 @@ import javax.inject.Singleton
 class DeckRepositoryImpl @Inject constructor(
     private val localDeckDataSource: LocalDeckDataSource,
     private val localDeckCardDataSource: LocalDeckCardDataSource,
-    private val myCardRepository: MyCardRepository
-) : DeckRepository, DeckCardRepository, MyDeckRepository, PracticeRepository {
+) : DeckRepository, DeckCardRepository {
 
     private val unownedCards = MutableStateFlow(emptyList<DeckCard>())
 
@@ -77,6 +69,10 @@ class DeckRepositoryImpl @Inject constructor(
         return localDeckDataSource.getAll().also { Logger.d("Fetched ${it.size} decks") }
     }
 
+    override fun observeAll(): Flow<List<Deck>> {
+        return localDeckDataSource.observeAll()
+    }
+
     override suspend fun saveDeck(deck: SaveDeckData): Deck {
         localDeckDataSource.getById(deck.deckId)?.let { existingDeck ->
             val orderedCards = existingDeck.cards.sortedBy { card ->
@@ -112,71 +108,4 @@ class DeckRepositoryImpl @Inject constructor(
             return entity
         }
     }
-
-    override fun observeMyDecks(): Flow<List<MyDeck>> {
-        return combine(
-            localDeckDataSource.observeAll(),
-            myCardRepository.observeMyCards()
-        ) { decks, myCards ->
-            decks.map { deck ->
-                val cards = deck.cards.map { card ->
-                    card to myCards.find { myCard -> myCard.cardId == card.id }
-                }
-
-                val learnedCards = cards.count { (_, myCard) ->
-                    if (myCard == null) return@count false
-                    myCard.practices.any { it.isCorrect }
-                }
-
-                val now = Date()
-                val cardToReview = cards.count { (_, myCard) ->
-                    val date = PracticeSessionCreator.getNextReviewDate(myCard)
-                    date <= now
-                }
-
-                MyDeck(
-                    id = UUID.randomUUID().toString(),
-                    deckId = deck.id,
-                    title = deck.title,
-                    cardsToReview = cardToReview,
-                    learnedCards = learnedCards,
-                    totalCards = deck.cards.size,
-                )
-            }
-        }
-    }
-
-    override suspend fun getSession(deckId: String): PracticeSession? {
-        val deck = localDeckDataSource.getById(deckId) ?: return null
-        return PracticeSessionCreator.create(
-            deck, myCardRepository.getMyCards()
-        )?.also { practice ->
-            Logger.d("Generated practice session | id=${practice.id} cards=${practice.cards.size}")
-        }
-    }
-
-    override suspend fun update(cardId: String, isCorrect: Boolean) {
-        val myCard = myCardRepository.getByCardId(cardId) ?: createMyCard(cardId)
-
-        val updatedCard = myCard.copy(
-            practices = myCard.practices + listOf(
-                MyCardPractice(
-                    date = Date(),
-                    isCorrect = isCorrect
-                )
-            )
-        )
-
-        Logger.d("Updated new my card | id=${updatedCard.id}, practices=${updatedCard.practices.size}")
-        myCardRepository.saveMyCard(updatedCard)
-    }
-
-    private fun createMyCard(cardId: String): MyCard {
-        return MyCard(
-            id = UUID.randomUUID().toString(),
-            cardId = cardId,
-            practices = emptyList()
-        )
-    }
-
 }
